@@ -129,6 +129,7 @@ Create or refine the repository's primary agent rule file (for example `AGENTS.m
 - what checks are mandatory before changing API, permissions, database, or frontend pages
 - what must never be changed casually
 - how and when docs must be kept in sync with the implementation
+- that code tasks are not complete until the documentation sync checklist has been checked
 
 This file must define concrete workflow rules and guardrails, not just system design abstractions.
 It should be the single authority source for execution rules unless the repo already has a clearly stronger equivalent.
@@ -209,6 +210,10 @@ That checklist should answer:
 - when a task is incomplete because code changed but docs did not
 - when to update `docs/TECH_DEBT.md`
 - when an agent may explicitly state "no doc impact" instead of editing docs
+- that every code task must either update the impacted docs or explicitly record "no doc impact" with a reason
+- how this check should appear in PR templates, task summaries, or completion notes when such workflow artifacts exist
+
+The primary rule file should treat this checklist as a completion gate, not as optional reading.
 
 ### 11. Retire duplicated or stale documents
 
@@ -243,6 +248,7 @@ Verify:
 - there is one obvious navigation entrypoint
 - startup prompts point to authority docs instead of duplicating them
 - module-level `README.md` files are tactical and local rather than shadow copies of top-level rules
+- the primary rule file clearly makes the documentation sync checklist part of task completion rather than a suggestion
 
 ### 13. Audit factual accuracy against code
 
@@ -292,6 +298,7 @@ Whenever you create this system for a repository, ensure the final docs teach ag
 4. Inspect the actual code path to verify the names and logic
 5. If docs and code disagree, trust code and repair the docs in the same PR
 6. Before closing the task, run the repo's documentation sync checklist if one exists
+7. If no docs changed, explicitly state "no doc impact" and why
 
 Also ensure the docs teach agents this ownership split:
 - the primary rule file owns workflow rules
@@ -347,6 +354,7 @@ Constraints:
 - `docs/README.md` should own navigation.
 - Archive docs must not remain in the active path as if they were authoritative.
 - If docs conflict with code, fix the docs.
+- The resulting system must make documentation sync a required completion check, not an optional reminder.
 
 Output:
 - Make the documentation changes directly in the repository.
@@ -377,6 +385,7 @@ Audit focus:
 4. Are there stale or superseded docs still sitting in the active docs path?
 5. Are there dead references to deleted docs, deleted skills, or nonexistent paths?
 6. Do active docs contain absolute statements that are not fully supported by the current code?
+7. Is the documentation sync checklist treated as mandatory in the primary rule file and completion flow?
 
 Repair requirements:
 - Keep the strongest authority files.
@@ -388,6 +397,7 @@ Repair requirements:
 - Inspect frontend API client folders for stale or demo clients that no longer map to real backend endpoints.
 - Remove, downgrade, or annotate pitfalls that cannot be tied to code, config, logs, or repeated verified failures.
 - Remove placeholder dates, fake resolved timestamps, and template residue from debt-tracking docs.
+- If a documentation sync checklist exists, make sure the primary rule file and completion flow treat it as mandatory before task closeout.
 
 Output:
 - Apply the fixes directly in the repository.
@@ -444,5 +454,6 @@ Before considering the bootstrap complete, verify:
 - stale frontend API client files are either cleaned up or clearly documented as non-authoritative
 - pitfalls are backed by evidence or clearly marked as needing confirmation
 - debt logs do not contain placeholder dates or template residue
+- the documentation sync checklist is treated as a required completion gate, with an explicit "no doc impact" path when appropriate
 
 These checks should be satisfied after Phase 2, not merely after the initial build pass.
