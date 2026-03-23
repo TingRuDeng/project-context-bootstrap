@@ -49,10 +49,16 @@ Depending on the repository, this skill may generate or refine:
 
 ## Install
 
-If this repository is published as a standalone skill repo, install it with:
+Install this standalone skill repo with:
 
 ```bash
-npx skills add <your-github-user>/project-context-bootstrap
+npx skills add TingRuDeng/project-context-bootstrap
+```
+
+Or use the full GitHub URL:
+
+```bash
+npx skills add https://github.com/TingRuDeng/project-context-bootstrap
 ```
 
 If your environment supports direct skill folder installation, place `SKILL.md` in a `project-context-bootstrap/` directory under your global skills path.
