@@ -26,7 +26,7 @@ Use this skill when:
 - a project has little or no agent-facing documentation
 - agents repeatedly misread architecture or API contracts
 - a team wants reusable project onboarding for AI-assisted development
-- a repository needs `AGENTS.md` plus a stable `docs/` context layer
+- a repository needs a primary agent rule file plus a stable `docs/` context layer
 
 Do not use this skill when:
 - the user only wants a single bugfix or feature change
@@ -36,7 +36,7 @@ Do not use this skill when:
 
 Generate or update only the files that materially improve agent onboarding:
 
-- `AGENTS.md`
+- the repository's primary agent rule file (for example `AGENTS.md`, `CLAUDE.md`, or an equivalent repo-level instruction file)
 - `docs/README.md`
 - `docs/ARCHITECTURE.md`
 - `docs/API_ENDPOINTS.md`
@@ -95,14 +95,14 @@ Do not summarize every folder. Focus on the paths an agent will actually need du
 
 ### 4. Write the repository rule layer
 
-Create or refine `AGENTS.md` so it answers:
+Create or refine the repository's primary agent rule file (for example `AGENTS.md`, `CLAUDE.md`, or an equivalent repo-level instruction file) so it answers:
 - what this repo contains and the mandatory startup checklist
 - how to start reading it (what to read first for Frontend vs. Backend tasks)
 - what checks are mandatory before changing API, permissions, database, or frontend pages
 - what must never be changed casually
 - how and when docs must be kept in sync with the implementation
 
-`AGENTS.md` must define concrete workflow rules and guardrails, not just system design abstractions.
+This file must define concrete workflow rules and guardrails, not just system design abstractions.
 It should be the single authority source for execution rules unless the repo already has a clearly stronger equivalent.
 
 ### 5. Write the navigation layer
@@ -155,14 +155,14 @@ Prefer short, operational guidance over narrative explanation.
 When a repository will be worked on repeatedly by multiple agents, create a ready-to-send startup prompt such as `docs/AGENT_STARTER_PROMPT.md`.
 
 That prompt should tell a future agent to:
-- read `AGENTS.md`
+- read the repository's primary agent rule file
 - read `docs/README.md`
 - read the target module `README.md`
 - verify code before trusting a document
 - update impacted docs in the same task when behavior changes
 
 Keep this prompt short enough to paste into a new session without editing.
-Do not copy the full workflow rules into this file if `AGENTS.md` already owns them. This file should be an entry shim, not a second rulebook.
+Do not copy the full workflow rules into this file if the primary rule file already owns them. This file should be an entry shim, not a second rulebook.
 
 ### 10. Add a documentation sync gate
 
@@ -192,7 +192,7 @@ For each candidate, decide one of:
 If archiving, place it under `docs/archive/` and add a short `docs/archive/README.md` stating:
 - archive docs are historical only
 - they are not the authority source for current development
-- current authority starts from `AGENTS.md` and `docs/README.md`
+- current authority starts from the primary rule file and `docs/README.md`
 
 Do not leave superseded docs in the active root path without a clear label, because agents will keep reading them.
 
@@ -200,7 +200,7 @@ Do not leave superseded docs in the active root path without a clear label, beca
 
 Whenever you create this system for a repository, ensure the final docs teach agents to work in this order:
 
-1. Read `AGENTS.md`
+1. Read the repository's primary agent rule file
 2. Read `docs/README.md`
 3. Read the micro-tactical `README.md` in the target module folder
 4. Inspect the actual code path to verify the names and logic
@@ -208,7 +208,7 @@ Whenever you create this system for a repository, ensure the final docs teach ag
 6. Before closing the task, run the repo's documentation sync checklist if one exists
 
 Also ensure the docs teach agents this ownership split:
-- `AGENTS.md` owns workflow rules
+- the primary rule file owns workflow rules
 - `docs/README.md` owns navigation
 - module `README.md` files own tactical local entry guidance
 - archive docs own historical context only
@@ -220,7 +220,7 @@ Always enforce these constraints:
 - DO NOT correct "wrongly formatted" variable names in existing files just to satisfy best practices; document the exception instead.
 - DO NOT flatten all knowledge into one file.
 - DO NOT treat documentation as a replacement for code testing and `grep` searching.
-- DO NOT let `AGENTS.md`, `docs/README.md`, startup prompts, and local READMEs all restate the same workflow in parallel.
+- DO NOT let the primary rule file, `docs/README.md`, startup prompts, and local READMEs all restate the same workflow in parallel.
 - DO NOT leave dead references to deleted docs, deleted skills, or nonexistent paths in the active document system.
 
 ## Prompt Templates
@@ -238,7 +238,7 @@ Build a reliable agent-facing project context system so future AI agents can ent
 
 Requirements:
 1. Inspect the repository shape, frameworks, routing, configuration, data model layer, and existing documentation.
-2. Create or refine a single rules entrypoint in `AGENTS.md`.
+2. Create or refine a single rules entrypoint in the repository's primary agent rule file.
 3. Create or refine a single navigation entrypoint in `docs/README.md`.
 4. Create or refine the stable knowledge docs that are actually justified by the codebase, including:
    - `docs/ARCHITECTURE.md`
@@ -255,7 +255,7 @@ Constraints:
 - Code is the source of truth.
 - Do not invent architecture facts.
 - Do not duplicate workflow rules across multiple files.
-- `AGENTS.md` should own workflow rules.
+- The primary rule file should own workflow rules.
 - `docs/README.md` should own navigation.
 - Archive docs must not remain in the active path as if they were authoritative.
 - If docs conflict with code, fix the docs.
@@ -288,7 +288,7 @@ Audit focus:
 
 Repair requirements:
 - Keep the strongest authority files.
-- Remove duplication between `AGENTS.md`, `docs/README.md`, startup prompts, and module READMEs.
+- Remove duplication between the primary rule file, `docs/README.md`, startup prompts, and module READMEs.
 - Archive historical docs under `docs/archive/` instead of leaving them mixed with active docs.
 - Preserve unique factual content by merging it into the current authority docs before archiving old files.
 

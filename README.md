@@ -15,7 +15,7 @@ Use this skill when a repository needs a reliable agent-facing context layer, es
 
 This skill is designed to create or repair a system centered around:
 
-- `AGENTS.md` for workflow rules
+- a primary repository rule file such as `AGENTS.md` or `CLAUDE.md`
 - `docs/README.md` for navigation
 - stable factual docs such as architecture, API, schema, and pitfalls
 - module-level `README.md` files for tactical entry points
@@ -25,7 +25,7 @@ This skill is designed to create or repair a system centered around:
 
 Depending on the repository, this skill may generate or refine:
 
-- `AGENTS.md`
+- the repository's primary agent rule file
 - `docs/README.md`
 - `docs/ARCHITECTURE.md`
 - `docs/API_ENDPOINTS.md`
@@ -77,7 +77,7 @@ Build a reliable agent-facing project context system so future AI agents can ent
 
 Requirements:
 1. Inspect the repository shape, frameworks, routing, configuration, data model layer, and existing documentation.
-2. Create or refine a single rules entrypoint in `AGENTS.md`.
+2. Create or refine a single rules entrypoint in the repository's primary agent rule file.
 3. Create or refine a single navigation entrypoint in `docs/README.md`.
 4. Create or refine the stable knowledge docs that are actually justified by the codebase.
 5. Add module-level `README.md` files only for high-value or high-risk code boundaries.
