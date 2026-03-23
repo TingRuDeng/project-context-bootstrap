@@ -21,6 +21,32 @@ This skill is designed to create or repair a system centered around:
 - module-level `README.md` files for tactical entry points
 - `docs/archive/` for historical or superseded material
 
+## Two-Phase Workflow
+
+This skill works best as an explicit two-step process:
+
+### Phase 1: Build
+
+Create the first coherent version of the repository context system:
+
+- establish the primary repository rule file
+- establish `docs/README.md` as the navigation entrypoint
+- create or refine the stable knowledge docs
+- add tactical module `README.md` files where they materially reduce blind scanning
+- archive stale or superseded docs out of the active path
+
+### Phase 2: Audit & Repair
+
+Do a dedicated validation pass against the real codebase before treating the docs as trustworthy:
+
+- verify routes, schemas, config, request builders, and model definitions
+- downgrade any doc that implies full coverage without actually having it
+- separate multi-backend or multi-service boundaries explicitly
+- remove weakly evidenced pitfalls and placeholder governance data
+- repair stale references, dead client files, and outdated assumptions
+
+Do not treat the first build pass as fully reliable until the audit-and-repair pass is complete.
+
 ## What It Produces
 
 Depending on the repository, this skill may generate or refine:
@@ -67,7 +93,7 @@ If your environment supports direct skill folder installation, place `SKILL.md` 
 
 When invoking this skill, give the agent a concrete repository-level task such as:
 
-### 1. Build a context system from scratch
+### 1. Phase 1: Build a context system from scratch
 
 ```text
 Please use the project-context-bootstrap skill for this repository.
@@ -90,7 +116,7 @@ Constraints:
 - If docs conflict with code, fix the docs.
 ```
 
-### 2. Audit and repair an existing system
+### 2. Phase 2: Audit and repair an existing system
 
 ```text
 Please use the project-context-bootstrap skill to audit and repair this repository's existing agent-facing documentation system.
@@ -98,6 +124,8 @@ Please use the project-context-bootstrap skill to audit and repair this reposito
 Goal:
 Do not rebuild everything. Identify drift, duplication, stale guidance, dead references, and outdated docs, then bring the system back to a single-source-of-truth structure.
 ```
+
+Use this after the initial build pass, or when a repository already has an existing context system that has started to drift.
 
 ### 3. Retire stale legacy docs
 

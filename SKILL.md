@@ -20,6 +20,10 @@ This skill should also reduce documentation entropy:
 - one file should own navigation
 - old or superseded material should be archived instead of left in active circulation
 
+This skill is a two-phase workflow:
+- **Phase 1: Build** a usable first version of the agent-facing context system
+- **Phase 2: Audit & Repair** that first version against the actual codebase before treating it as trustworthy
+
 ## When To Use
 
 Use this skill when:
@@ -51,6 +55,22 @@ Generate or update only the files that materially improve agent onboarding:
 
 If the repository already has equivalents, consolidate instead of duplicating.
 
+## Two-Phase Execution Model
+
+Treat this skill as a deliberate two-step process:
+
+1. **Build**
+   - create the first coherent version of the context system
+   - establish authority files, navigation, stable knowledge docs, tactical READMEs, and archive boundaries
+   - accept that this first version may still contain fact drift or incomplete coverage
+
+2. **Audit & Repair**
+   - verify the first version against real code, route definitions, schemas, config, and active callers
+   - identify false completeness, stale references, weakly evidenced pitfalls, dead client files, and multi-backend boundary confusion
+   - repair high-risk findings before declaring the system reliable
+
+Do not treat Phase 1 output as fully trustworthy until Phase 2 has been completed.
+
 ## Core Rules
 
 1. **Code is the absolute source of truth.**
@@ -62,7 +82,7 @@ If the repository already has equivalents, consolidate instead of duplicating.
 7. **Pitfalls Need Evidence.** `KNOWN_PITFALLS.md` should be built from code, config, logs, or repeated verified failures. Unverified folklore should be marked as needing confirmation or removed.
 8. **No Placeholder Governance Data.** `TECH_DEBT.md`, solved-debt sections, and maintenance timelines must not contain fake dates, placeholder markers, or template residue.
 
-## Workflow
+## Phase 1: Build
 
 ### 1. Detect the repository shape
 
@@ -212,6 +232,46 @@ If archiving, place it under `docs/archive/` and add a short `docs/archive/READM
 
 Do not leave superseded docs in the active root path without a clear label, because agents will keep reading them.
 
+## Phase 2: Audit & Repair
+
+After the first version exists, run a dedicated validation pass before considering the repository context system complete.
+
+### 12. Audit the authority structure
+
+Verify:
+- there is one obvious rules entrypoint
+- there is one obvious navigation entrypoint
+- startup prompts point to authority docs instead of duplicating them
+- module-level `README.md` files are tactical and local rather than shadow copies of top-level rules
+
+### 13. Audit factual accuracy against code
+
+Check the first version of the docs against:
+- real route definitions
+- schema or serializer definitions
+- actual request builders and frontend client code
+- configuration files and middleware chains
+- model definitions and migrations
+
+This phase must explicitly look for:
+- documents that imply full coverage without actually having it
+- mixed-up boundaries in multi-backend or multi-service repositories
+- frontend client files that target missing or outdated backend endpoints
+- route names, auth flows, or response fields that drifted from code
+
+### 14. Repair high-risk findings
+
+When the audit finds issues, prefer these corrections:
+- downgrade a doc from "complete reference" to "verified subset" when coverage is partial
+- split API and architecture docs by backend/service when boundaries were previously blurred
+- remove or downgrade weakly evidenced pitfalls
+- clean dead references, obsolete client files, and stale archive status labels
+- remove placeholder governance data and fake dates from debt tracking docs
+
+### 15. Re-check completion criteria
+
+Only after repair should the system be considered stable enough for repeated agent use.
+
 ## Reading Protocol To Embed
 
 Whenever you create this system for a repository, ensure the final docs teach agents to work in this order:
@@ -286,6 +346,10 @@ Output:
   3. which docs were archived or removed
   4. which facts were verified against code
   5. which areas still require manual follow-up
+
+Important:
+- This completes Phase 1 only.
+- After this pass, run a separate audit-and-repair pass before treating the documentation as fully trustworthy.
 ```
 
 ### Template 2: Audit and repair an existing system
@@ -363,3 +427,5 @@ Before considering the bootstrap complete, verify:
 - any API document that claims completeness has been checked against real route sources
 - pitfalls are backed by evidence or clearly marked as needing confirmation
 - debt logs do not contain placeholder dates or template residue
+
+These checks should be satisfied after Phase 2, not merely after the initial build pass.
