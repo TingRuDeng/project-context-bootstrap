@@ -258,12 +258,22 @@ This phase must explicitly look for:
 - mixed-up boundaries in multi-backend or multi-service repositories
 - frontend client files that target missing or outdated backend endpoints
 - route names, auth flows, or response fields that drifted from code
+- backend-specific endpoint ownership that was flattened into a single generic API story
+- auth route mismatches where similar capabilities use different paths or names across backends/services
+
+When the repository has multiple backends or services, explicitly audit:
+- which endpoints exist only on one backend
+- which endpoints are intentionally shared
+- whether similarly named auth endpoints use different concrete paths across services
+- whether frontend API client directories still contain demo, legacy, or test-only clients that no longer map to real endpoints
 
 ### 14. Repair high-risk findings
 
 When the audit finds issues, prefer these corrections:
 - downgrade a doc from "complete reference" to "verified subset" when coverage is partial
 - split API and architecture docs by backend/service when boundaries were previously blurred
+- explicitly mark endpoint ownership when a route exists only on one backend/service
+- call out stale frontend API client files when they remain in the repo but should not be treated as active integration code
 - remove or downgrade weakly evidenced pitfalls
 - clean dead references, obsolete client files, and stale archive status labels
 - remove placeholder governance data and fake dates from debt tracking docs
@@ -373,6 +383,11 @@ Repair requirements:
 - Remove duplication between the primary rule file, `docs/README.md`, startup prompts, and module READMEs.
 - Archive historical docs under `docs/archive/` instead of leaving them mixed with active docs.
 - Preserve unique factual content by merging it into the current authority docs before archiving old files.
+- If an API doc currently overclaims completeness, downgrade it to a verified overview or verified subset unless full route coverage is proven.
+- In multi-backend repositories, verify endpoint ownership and route-name differences explicitly instead of assuming functional parity.
+- Inspect frontend API client folders for stale or demo clients that no longer map to real backend endpoints.
+- Remove, downgrade, or annotate pitfalls that cannot be tied to code, config, logs, or repeated verified failures.
+- Remove placeholder dates, fake resolved timestamps, and template residue from debt-tracking docs.
 
 Output:
 - Apply the fixes directly in the repository.
@@ -425,6 +440,8 @@ Before considering the bootstrap complete, verify:
 - no active doc still points to deleted files or obsolete skills
 - multi-backend repositories are explicitly separated in architecture and API docs
 - any API document that claims completeness has been checked against real route sources
+- backend-specific endpoint ownership is explicit when similar capabilities differ across services
+- stale frontend API client files are either cleaned up or clearly documented as non-authoritative
 - pitfalls are backed by evidence or clearly marked as needing confirmation
 - debt logs do not contain placeholder dates or template residue
 
