@@ -58,6 +58,9 @@ If the repository already has equivalents, consolidate instead of duplicating.
 3. **Beware of Framework "Magic".** Global behavior (like automatic `camelCase` to `snake_case` conversions) is often hidden deep in backend dependency configurations, package manifests, or middleware arrays, not just in frontend HTTP interceptors. Dig deep into the configuration layer before declaring "there is no conversion layer".
 4. **Prefer a Single Authority Source per concern.** Do not let multiple files independently define the same workflow rules, startup order, or contract assumptions. Pick one authority file and make the others point to it.
 5. **Archive, Don’t Leave Ghost Rules Behind.** Old onboarding docs, generic tutorials, or superseded numbered documents should be moved out of the active path if they are no longer authoritative.
+6. **Do Not Claim Completeness Without Coverage.** If a doc is only partially verified, label it as a core overview or verified subset. Do not present it as a complete catalog unless route-by-route or model-by-model coverage has actually been checked.
+7. **Pitfalls Need Evidence.** `KNOWN_PITFALLS.md` should be built from code, config, logs, or repeated verified failures. Unverified folklore should be marked as needing confirmation or removed.
+8. **No Placeholder Governance Data.** `TECH_DEBT.md`, solved-debt sections, and maintenance timelines must not contain fake dates, placeholder markers, or template residue.
 
 ## Workflow
 
@@ -75,6 +78,11 @@ Start with:
 - package manifests and dependency files
 - framework settings files
 - routing files
+
+If the repository contains more than one backend, service, or API surface:
+- identify each backend separately
+- record which routes, schemas, and auth flows belong to which backend
+- do not merge multiple backends into a single implicit API description
 
 ### 2. Hunt for Implicit Contracts and Middleware
 
@@ -128,6 +136,12 @@ Create or refine:
 
 Keep these factual and implementation-aligned. Avoid idealized architecture prose.
 
+Additional quality rules for this layer:
+- If `docs/API_ENDPOINTS.md` is not fully verified, explicitly label it as a partial reference, verified subset, or core overview. Do not call it a complete API catalog unless you checked real route definitions across all active backends.
+- If the repository has multiple backends, `docs/API_ENDPOINTS.md` and `docs/ARCHITECTURE.md` must distinguish them explicitly.
+- `docs/KNOWN_PITFALLS.md` should prefer pitfalls with code or configuration anchors. Weakly supported entries should be downgraded or removed.
+- `docs/TECH_DEBT.md` must not contain placeholder dates such as `2024-xx-xx` or unresolved template markers.
+
 ### 7. Record the first ADR
 
 If the repository lacks ADRs, create `docs/ADR/0001-*.md` for the first major decision that clearly affects development behavior.
@@ -149,6 +163,8 @@ Each tactical module guide should tell an agent:
 - local traps and non-negotiable constraints
 
 Prefer short, operational guidance over narrative explanation.
+
+When frontend API client folders exist, inspect them for dead or stale client files whose target endpoints no longer exist. These mismatches should influence both docs and cleanup recommendations.
 
 ### 9. Add a reusable startup prompt
 
@@ -222,6 +238,8 @@ Always enforce these constraints:
 - DO NOT treat documentation as a replacement for code testing and `grep` searching.
 - DO NOT let the primary rule file, `docs/README.md`, startup prompts, and local READMEs all restate the same workflow in parallel.
 - DO NOT leave dead references to deleted docs, deleted skills, or nonexistent paths in the active document system.
+- DO NOT let `docs/API_ENDPOINTS.md` imply full route coverage unless all relevant route sources were actually checked.
+- DO NOT keep weakly evidenced pitfalls or placeholder debt metadata just to make docs look complete.
 
 ## Prompt Templates
 
@@ -341,3 +359,7 @@ Before considering the bootstrap complete, verify:
 - startup prompts point to authority docs instead of duplicating them
 - stale or superseded docs are either archived or clearly marked as non-authoritative
 - no active doc still points to deleted files or obsolete skills
+- multi-backend repositories are explicitly separated in architecture and API docs
+- any API document that claims completeness has been checked against real route sources
+- pitfalls are backed by evidence or clearly marked as needing confirmation
+- debt logs do not contain placeholder dates or template residue
