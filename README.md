@@ -20,6 +20,7 @@ This skill is designed to create or repair a system centered around:
 - stable factual docs such as architecture, API, schema, and pitfalls
 - module-level `README.md` files for tactical entry points
 - `docs/archive/` for historical or superseded material
+- explicit execution boundaries for agents, including branch, commit, push, and merge policy
 
 ## Two-Phase Workflow
 
@@ -69,6 +70,7 @@ Depending on the repository, this skill may generate or refine:
 - Code is the source of truth.
 - Document repository reality, not idealized architecture.
 - Keep one authority source for rules and one authority source for navigation.
+- Make execution boundaries explicit, not implicit.
 - Do not let startup prompts, navigation docs, and local READMEs all restate the same workflow in parallel.
 - Archive stale or superseded docs instead of leaving them in the active path.
 - Treat documentation as a navigation and coordination layer, not a replacement for reading code.
@@ -105,9 +107,10 @@ Requirements:
 1. Inspect the repository shape, frameworks, routing, configuration, data model layer, and existing documentation.
 2. Create or refine a single rules entrypoint in the repository's primary agent rule file.
 3. Create or refine a single navigation entrypoint in `docs/README.md`.
-4. Create or refine the stable knowledge docs that are actually justified by the codebase.
-5. Add module-level `README.md` files only for high-value or high-risk code boundaries.
-6. Archive stale, duplicate, generic, or superseded docs under `docs/archive/`.
+4. Make sure the rule layer documents execution boundaries such as default-branch policy, branching expectations, commit/push permissions, merge authority, and evidence requirements.
+5. Create or refine the stable knowledge docs that are actually justified by the codebase.
+6. Add module-level `README.md` files only for high-value or high-risk code boundaries.
+7. Archive stale, duplicate, generic, or superseded docs under `docs/archive/`.
 
 Constraints:
 - Code is the source of truth.
@@ -142,6 +145,7 @@ After using this skill well, a repository should have:
 
 - one obvious rules entrypoint
 - one obvious navigation entrypoint
+- explicit branch / commit / push / merge boundaries for agents
 - tactical local module guides only where they reduce blind scanning
 - startup prompts that point to authority docs instead of duplicating them
 - stale docs archived or clearly marked as non-authoritative

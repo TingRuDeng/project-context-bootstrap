@@ -128,8 +128,21 @@ Create or refine the repository's primary agent rule file (for example `AGENTS.m
 - how to start reading it (what to read first for Frontend vs. Backend tasks)
 - what checks are mandatory before changing API, permissions, database, or frontend pages
 - what must never be changed casually
+- what execution boundaries apply to agents working in the repo
 - how and when docs must be kept in sync with the implementation
 - that code tasks are not complete until the documentation sync checklist has been checked
+
+The rule layer must define execution permissions, not just reading order. At minimum, document:
+- whether agents may edit directly on the default branch
+- when a task or feature branch is expected
+- whether agents may commit or push code
+- who may merge
+- what verification or delivery evidence is required before claiming completion
+
+If the repository uses multiple agent roles, describe these boundaries separately by role instead of assuming one universal policy. Generic role buckets may include:
+- interactive/helper agents
+- worker/executor agents
+- reviewer/control agents
 
 This file must define concrete workflow rules and guardrails, not just system design abstractions.
 It should be the single authority source for execution rules unless the repo already has a clearly stronger equivalent.
@@ -197,9 +210,11 @@ That prompt should tell a future agent to:
 - read the target module `README.md`
 - verify code before trusting a document
 - update impacted docs in the same task when behavior changes
+- respect the repository's branch / commit / push / merge boundaries
 
 Keep this prompt short enough to paste into a new session without editing.
 Do not copy the full workflow rules into this file if the primary rule file already owns them. This file should be an entry shim, not a second rulebook.
+The startup prompt should briefly remind the agent that execution boundaries exist, while pointing back to the primary rule file for the full policy.
 
 ### 10. Add a documentation sync gate
 
@@ -306,6 +321,13 @@ Also ensure the docs teach agents this ownership split:
 - module `README.md` files own tactical local entry guidance
 - archive docs own historical context only
 
+Also ensure the final system teaches agent execution boundaries:
+- whether work on the default branch is allowed
+- when a separate branch is expected
+- which agent roles may commit or push
+- who owns merge authority
+- what evidence is required from code-producing agents
+
 ## Constraints
 
 Always enforce these constraints:
@@ -317,6 +339,7 @@ Always enforce these constraints:
 - DO NOT leave dead references to deleted docs, deleted skills, or nonexistent paths in the active document system.
 - DO NOT let `docs/API_ENDPOINTS.md` imply full route coverage unless all relevant route sources were actually checked.
 - DO NOT keep weakly evidenced pitfalls or placeholder debt metadata just to make docs look complete.
+- DO NOT assume all agents in a repository share the same execution permissions; document role-specific boundaries when the repo uses distinct agent roles.
 
 ## Prompt Templates
 
@@ -352,6 +375,8 @@ Constraints:
 - Do not duplicate workflow rules across multiple files.
 - The primary rule file should own workflow rules.
 - `docs/README.md` should own navigation.
+- The rule layer must describe execution boundaries such as default-branch policy, branch expectations, commit/push permissions, merge authority, and evidence requirements.
+- If the repository uses multiple agent roles, describe those execution permissions separately by role.
 - Archive docs must not remain in the active path as if they were authoritative.
 - If docs conflict with code, fix the docs.
 - The resulting system must make documentation sync a required completion check, not an optional reminder.
@@ -392,6 +417,8 @@ Repair requirements:
 - Remove duplication between the primary rule file, `docs/README.md`, startup prompts, and module READMEs.
 - Archive historical docs under `docs/archive/` instead of leaving them mixed with active docs.
 - Preserve unique factual content by merging it into the current authority docs before archiving old files.
+- Verify that execution boundaries are documented clearly enough that future agents can tell whether they may branch, commit, push, or merge.
+- If the repository uses multiple agent roles, verify that those permissions are separated by role rather than flattened into one generic rule.
 - If an API doc currently overclaims completeness, downgrade it to a verified overview or verified subset unless full route coverage is proven.
 - In multi-backend repositories, verify endpoint ownership and route-name differences explicitly instead of assuming functional parity.
 - Inspect frontend API client folders for stale or demo clients that no longer map to real backend endpoints.
@@ -406,7 +433,8 @@ Output:
   2. which docs were archived
   3. which dead references were removed
   4. which duplicated rule sources were collapsed
-  5. which risks still remain
+  5. whether execution boundaries are now explicit enough for future agents
+  6. which risks still remain
 ```
 
 ### Template 3: Archive stale legacy docs
@@ -446,6 +474,8 @@ Before considering the bootstrap complete, verify:
 - the repository has one obvious navigation entrypoint
 - module-level entry guides exist only where they materially reduce blind scanning
 - startup prompts point to authority docs instead of duplicating them
+- the rule layer makes default-branch policy, branching expectations, commit/push permissions, merge authority, and evidence requirements explicit
+- repositories with multiple agent roles document execution boundaries separately by role
 - stale or superseded docs are either archived or clearly marked as non-authoritative
 - no active doc still points to deleted files or obsolete skills
 - multi-backend repositories are explicitly separated in architecture and API docs
