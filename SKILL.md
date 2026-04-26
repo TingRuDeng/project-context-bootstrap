@@ -1,16 +1,16 @@
 ---
 name: project-context-bootstrap
-description: Use when entering a new or poorly documented repository and you need to build a reliable agent-facing context and onboarding system.
+description: Use when entering a new or poorly documented repository and you need to build a reliable human-and-agent-facing context and onboarding system.
 ---
 
 # Project Context Bootstrap
 
 ## Overview
 
-Use this skill to turn an unfamiliar codebase into a repository that AI agents can enter and work in with less blind scanning and fewer architectural mistakes.
+Use this skill to turn an unfamiliar codebase into a repository that both human developers and AI agents can enter and work in with less blind scanning and fewer architectural mistakes.
 
 The goal is not to generate "more docs". The goal is to generate a small set of high-signal documents that define:
-- how agents should work in the repo
+- how humans and agents should work in the repo
 - what the system looks like
 - where to start for common task types
 - what historical traps and contract edges must not be broken
@@ -21,24 +21,25 @@ This skill should also reduce documentation entropy:
 - old or superseded material should be archived instead of left in active circulation
 
 This skill is a two-phase workflow:
-- **Phase 1: Build** a usable first version of the agent-facing context system
+- **Phase 1: Build** a usable first version of the human-and-agent-facing context system
 - **Phase 2: Audit & Repair** that first version against the actual codebase before treating it as trustworthy
 
 ## When To Use
 
 Use this skill when:
 - a project has little or no agent-facing documentation
+- human onboarding is slow because docs are hard to scan or too prompt-oriented
 - agents repeatedly misread architecture or API contracts
 - a team wants reusable project onboarding for AI-assisted development
 - a repository needs a primary agent rule file plus a stable `docs/` context layer
 
 Do not use this skill when:
 - the user only wants a single bugfix or feature change
-- the repository already has a complete, trusted, and actively maintained agent context system
+- the repository already has a complete, trusted, and actively maintained human-and-agent context system
 
 ## Target Outputs
 
-Generate or update only the files that materially improve agent onboarding:
+Generate or update only the files that materially improve human and agent onboarding:
 
 - the repository's primary agent rule file (for example `AGENTS.md`, `CLAUDE.md`, or an equivalent repo-level instruction file)
 - `docs/README.md`
@@ -54,6 +55,12 @@ Generate or update only the files that materially improve agent onboarding:
 - `docs/archive/README.md` when the repository has old, superseded, or generic documents that should be retained only as historical reference
 
 If the repository already has equivalents, consolidate instead of duplicating.
+
+Human-friendly quality baseline for generated docs:
+- each authority doc should start with a short "Purpose" and "Who should read this"
+- provide a quick summary section that a human can scan in under one minute
+- avoid machine-only shorthand; explain local jargon or repo-specific terms on first use
+- keep cross-links explicit so humans can navigate without relying on hidden agent memory
 
 ## Two-Phase Execution Model
 
@@ -81,6 +88,7 @@ Do not treat Phase 1 output as fully trustworthy until Phase 2 has been complete
 6. **Do Not Claim Completeness Without Coverage.** If a doc is only partially verified, label it as a core overview or verified subset. Do not present it as a complete catalog unless route-by-route or model-by-model coverage has actually been checked.
 7. **Pitfalls Need Evidence.** `KNOWN_PITFALLS.md` should be built from code, config, logs, or repeated verified failures. Unverified folklore should be marked as needing confirmation or removed.
 8. **No Placeholder Governance Data.** `TECH_DEBT.md`, solved-debt sections, and maintenance timelines must not contain fake dates, placeholder markers, or template residue.
+9. **Default to Dual-Audience Readability.** Every authoritative doc must remain useful to both humans and agents: concise summaries, explicit context, and traceable code anchors.
 
 ## Phase 1: Build
 
@@ -119,7 +127,7 @@ Create a working mental map of:
 - authentication and permission path
 - historical compatibility seams
 
-Do not summarize every folder. Focus on the paths an agent will actually need during development.
+Do not summarize every folder. Focus on the paths humans and agents will actually need during development.
 
 ### 4. Write the repository rule layer
 
@@ -149,9 +157,9 @@ It should be the single authority source for execution rules unless the repo alr
 
 ### 5. Write the navigation layer
 
-Create or refine `docs/README.md` so it tells agents:
+Create or refine `docs/README.md` so it tells humans and agents:
 - what each document is for and its level of authority
-- the exact step-by-step reading flow for specific tasks (e.g. CRUD vs API modifications)
+- the exact step-by-step reading flow for specific tasks (e.g. CRUD vs API modifications), including where a human maintainer should start
 - which sections are suitable for future script automation (e.g. endpoint lists, schema dumps) vs. which must remain human/agent-maintained (e.g. ADRs, pitfalls).
 - where the repo-specific startup prompt and documentation sync checklist live, if the repository uses them
 
@@ -175,6 +183,8 @@ Additional quality rules for this layer:
 - If the repository has multiple backends, `docs/API_ENDPOINTS.md` and `docs/ARCHITECTURE.md` must distinguish them explicitly.
 - `docs/KNOWN_PITFALLS.md` should prefer pitfalls with code or configuration anchors. Weakly supported entries should be downgraded or removed.
 - `docs/TECH_DEBT.md` must not contain placeholder dates such as `2024-xx-xx` or unresolved template markers.
+- each stable doc should include a short "How this was verified" note with concrete code-entry anchors.
+- prefer scannable structures (short sections, concise tables, explicit headings) over dense narrative blocks.
 
 ### 7. Record the first ADR
 
@@ -301,11 +311,11 @@ When the audit finds issues, prefer these corrections:
 
 ### 15. Re-check completion criteria
 
-Only after repair should the system be considered stable enough for repeated agent use.
+Only after repair should the system be considered stable enough for repeated human and agent use.
 
 ## Reading Protocol To Embed
 
-Whenever you create this system for a repository, ensure the final docs teach agents to work in this order:
+Whenever you create this system for a repository, ensure the final docs teach humans and agents to work in this order:
 
 1. Read the repository's primary agent rule file
 2. Read `docs/README.md`
@@ -315,7 +325,7 @@ Whenever you create this system for a repository, ensure the final docs teach ag
 6. Before closing the task, run the repo's documentation sync checklist if one exists
 7. If no docs changed, explicitly state "no doc impact" and why
 
-Also ensure the docs teach agents this ownership split:
+Also ensure the docs teach humans and agents this ownership split:
 - the primary rule file owns workflow rules
 - `docs/README.md` owns navigation
 - module `README.md` files own tactical local entry guidance
@@ -327,6 +337,7 @@ Also ensure the final system teaches agent execution boundaries:
 - which agent roles may commit or push
 - who owns merge authority
 - what evidence is required from code-producing agents
+- what human-readable delivery evidence is required before task closeout
 
 ## Constraints
 
@@ -340,6 +351,7 @@ Always enforce these constraints:
 - DO NOT let `docs/API_ENDPOINTS.md` imply full route coverage unless all relevant route sources were actually checked.
 - DO NOT keep weakly evidenced pitfalls or placeholder debt metadata just to make docs look complete.
 - DO NOT assume all agents in a repository share the same execution permissions; document role-specific boundaries when the repo uses distinct agent roles.
+- DO NOT produce machine-first prose that a new human maintainer cannot understand without prompt context.
 
 ## Prompt Templates
 
@@ -352,7 +364,7 @@ Adapt the template to the repository context, but keep the structure intact.
 Please use the project-context-bootstrap skill for this repository.
 
 Goal:
-Build a reliable agent-facing project context system so future AI agents can enter this repo, understand how to start, and develop with less blind scanning and fewer incorrect assumptions.
+Build a reliable human-and-agent-facing project context system so future AI agents and human maintainers can enter this repo, understand how to start, and develop with less blind scanning and fewer incorrect assumptions.
 
 Requirements:
 1. Inspect the repository shape, frameworks, routing, configuration, data model layer, and existing documentation.
@@ -368,6 +380,7 @@ Requirements:
 6. Add `docs/AGENT_STARTER_PROMPT.md` if this repo will be used repeatedly by multiple agents.
 7. Add `docs/DOC_SYNC_CHECKLIST.md` if the repo needs a concrete documentation sync gate.
 8. If the repository has old, duplicate, generic, or superseded docs, move them into `docs/archive/` and add `docs/archive/README.md`.
+9. Ensure each authoritative doc includes a human-readable quick summary and a clear "who should read this" section.
 
 Constraints:
 - Code is the source of truth.
@@ -380,6 +393,7 @@ Constraints:
 - Archive docs must not remain in the active path as if they were authoritative.
 - If docs conflict with code, fix the docs.
 - The resulting system must make documentation sync a required completion check, not an optional reminder.
+- Generated docs must be easy for humans to scan without relying on implicit agent memory.
 
 Output:
 - Make the documentation changes directly in the repository.
@@ -388,7 +402,8 @@ Output:
   2. which files were updated
   3. which docs were archived or removed
   4. which facts were verified against code
-  5. which areas still require manual follow-up
+  5. how human readability was improved (summary structure, terminology clarity, navigation)
+  6. which areas still require manual follow-up
 
 Important:
 - This completes Phase 1 only.
@@ -398,7 +413,7 @@ Important:
 ### Template 2: Audit and repair an existing system
 
 ```text
-Please use the project-context-bootstrap skill to audit and repair this repository's existing agent-facing documentation system.
+Please use the project-context-bootstrap skill to audit and repair this repository's existing human-and-agent-facing documentation system.
 
 Goal:
 Do not rebuild everything. Identify drift, duplication, stale guidance, dead references, and outdated docs, then bring the system back to a single-source-of-truth structure.
@@ -411,6 +426,7 @@ Audit focus:
 5. Are there dead references to deleted docs, deleted skills, or nonexistent paths?
 6. Do active docs contain absolute statements that are not fully supported by the current code?
 7. Is the documentation sync checklist treated as mandatory in the primary rule file and completion flow?
+8. Are the authority docs readable for a human maintainer without hidden prompt context?
 
 Repair requirements:
 - Keep the strongest authority files.
@@ -425,6 +441,7 @@ Repair requirements:
 - Remove, downgrade, or annotate pitfalls that cannot be tied to code, config, logs, or repeated verified failures.
 - Remove placeholder dates, fake resolved timestamps, and template residue from debt-tracking docs.
 - If a documentation sync checklist exists, make sure the primary rule file and completion flow treat it as mandatory before task closeout.
+- Ensure each authority doc has a concise quick summary and an explicit intended audience.
 
 Output:
 - Apply the fixes directly in the repository.
@@ -434,7 +451,8 @@ Output:
   3. which dead references were removed
   4. which duplicated rule sources were collapsed
   5. whether execution boundaries are now explicit enough for future agents
-  6. which risks still remain
+  6. whether docs are now human-readable by default
+  7. which risks still remain
 ```
 
 ### Template 3: Archive stale legacy docs
@@ -485,5 +503,6 @@ Before considering the bootstrap complete, verify:
 - pitfalls are backed by evidence or clearly marked as needing confirmation
 - debt logs do not contain placeholder dates or template residue
 - the documentation sync checklist is treated as a required completion gate, with an explicit "no doc impact" path when appropriate
+- authoritative docs include clear human-readable summaries and audience markers
 
 These checks should be satisfied after Phase 2, not merely after the initial build pass.

@@ -1,14 +1,15 @@
 # project-context-bootstrap
 
-A reusable agent skill for building and repairing AI-facing project context systems in code repositories.
+A reusable agent skill for building and repairing human-and-agent-facing project context systems in code repositories.
 
-This skill helps transform a repository into something future AI agents can enter and work in with less blind scanning, fewer architectural mistakes, and fewer duplicated or stale documentation paths.
+This skill helps transform a repository into something both human maintainers and future AI agents can enter and work in with less blind scanning, fewer architectural mistakes, and fewer duplicated or stale documentation paths.
 
 ## What This Skill Is For
 
-Use this skill when a repository needs a reliable agent-facing context layer, especially if:
+Use this skill when a repository needs a reliable human-and-agent-facing context layer, especially if:
 
 - the project has little or no agent-facing documentation
+- human onboarding is slow because docs are hard to scan
 - agents repeatedly misread architecture, API contracts, or naming conventions
 - the docs are fragmented, duplicated, or stale
 - the team wants a repeatable repository bootstrap for AI-assisted development
@@ -71,6 +72,7 @@ Depending on the repository, this skill may generate or refine:
 - Document repository reality, not idealized architecture.
 - Keep one authority source for rules and one authority source for navigation.
 - Make execution boundaries explicit, not implicit.
+- Make authority docs readable by default for humans (quick summaries, explicit audience, clear cross-links).
 - Do not let startup prompts, navigation docs, and local READMEs all restate the same workflow in parallel.
 - Archive stale or superseded docs instead of leaving them in the active path.
 - Treat documentation as a navigation and coordination layer, not a replacement for reading code.
@@ -101,7 +103,7 @@ When invoking this skill, give the agent a concrete repository-level task such a
 Please use the project-context-bootstrap skill for this repository.
 
 Goal:
-Build a reliable agent-facing project context system so future AI agents can enter this repo, understand how to start, and develop with less blind scanning and fewer incorrect assumptions.
+Build a reliable human-and-agent-facing project context system so future AI agents and human maintainers can enter this repo, understand how to start, and develop with less blind scanning and fewer incorrect assumptions.
 
 Requirements:
 1. Inspect the repository shape, frameworks, routing, configuration, data model layer, and existing documentation.
@@ -111,6 +113,7 @@ Requirements:
 5. Create or refine the stable knowledge docs that are actually justified by the codebase.
 6. Add module-level `README.md` files only for high-value or high-risk code boundaries.
 7. Archive stale, duplicate, generic, or superseded docs under `docs/archive/`.
+8. Ensure authority docs include a concise quick summary and explicit intended audience for human readers.
 
 Constraints:
 - Code is the source of truth.
@@ -122,7 +125,7 @@ Constraints:
 ### 2. Phase 2: Audit and repair an existing system
 
 ```text
-Please use the project-context-bootstrap skill to audit and repair this repository's existing agent-facing documentation system.
+Please use the project-context-bootstrap skill to audit and repair this repository's existing human-and-agent-facing documentation system.
 
 Goal:
 Do not rebuild everything. Identify drift, duplication, stale guidance, dead references, and outdated docs, then bring the system back to a single-source-of-truth structure.
@@ -146,6 +149,7 @@ After using this skill well, a repository should have:
 - one obvious rules entrypoint
 - one obvious navigation entrypoint
 - explicit branch / commit / push / merge boundaries for agents
+- authority docs that humans can scan quickly without hidden prompt context
 - tactical local module guides only where they reduce blind scanning
 - startup prompts that point to authority docs instead of duplicating them
 - stale docs archived or clearly marked as non-authoritative
@@ -156,7 +160,7 @@ After using this skill well, a repository should have:
 Do not use this skill when:
 
 - the user only wants a single bugfix or feature change
-- the repository already has a complete and trusted agent context system
+- the repository already has a complete and trusted human-and-agent context system
 - the task is local implementation work rather than repository context design
 
 ## License
