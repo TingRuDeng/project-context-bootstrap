@@ -40,3 +40,23 @@
 - `SKILL.md` 明确新增人机双友好文档契约、AI 摘要块、证据锚点、上下文预算和 AI 上下文索引规则。
 - `README.md` 同步补充产物清单、两阶段工作流、使用模板和 GitHub 参考实践。
 - 本次为纯文档与技能规范变更，未引入运行时代码；验证以静态检查、行数约束、BOM 检查、关键术语检查和 diff 空白检查为主。
+
+## Review 跟进：验证闭环与模板化
+
+### 目标
+
+落实审查发现中的三个问题：缺少可执行验证闭环、`AI_CONTEXT` 缺少固定模板、参考实践缺少采纳说明。
+
+### 执行项
+
+- [x] 新增 `scripts/validate_docs.py`，校验 `ai_summary`、权威文档标题、`AI_CONTEXT` 章节顺序、占位词和本地链接。
+- [x] 新增 `tests/test_validate_docs.py`，覆盖有效示例、缺失摘要块、`AI_CONTEXT` 缺失章节。
+- [x] 新增 `templates/AI_CONTEXT.md`，提供固定章节顺序和 Optional 区域。
+- [x] 新增 `examples/fixtures/android-client-context/`，作为 Android 客户端上下文示例。
+- [x] 更新 `SKILL.md`，把模板和校验脚本纳入生成与完成检查。
+- [x] 更新 `README.md`，说明 AGENTS.md、llms.txt、Repomix、Gitingest 的采纳与未采纳点。
+
+### Review 小结
+
+- 这次从“规范描述”推进到“模板 + 示例 + 自动校验”。
+- Android 示例只覆盖上下文文档形态，不代表完整 Android 项目。

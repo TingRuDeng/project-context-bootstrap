@@ -35,6 +35,7 @@
 | `AGENTS.md` / `CLAUDE.md` / 等价主规则文件 | 记录执行规则、权限边界、分支、提交、推送、合并和验收证据 |
 | `docs/README.md` | 文档导航入口，告诉人类和代理按任务类型如何阅读 |
 | `docs/AI_CONTEXT.md` | 面向 AI 的短上下文索引，列出权威文档、任务路由和证据入口 |
+| `templates/AI_CONTEXT.md` | 本技能自带的 AI 上下文索引模板 |
 | `docs/ARCHITECTURE.md` | 系统形态、模块边界、数据流和中间件行为 |
 | `docs/API_ENDPOINTS.md` | 接口契约、认证、分页、错误和响应约定 |
 | `docs/DATABASE_SCHEMA.md` | 核心模型、迁移约束、索引、状态和软删除规则 |
@@ -45,6 +46,8 @@
 | `docs/ADR/0001-*.md` | 影响开发行为的首个架构决策记录 |
 | 模块级 `README.md` | 高风险模块的局部入口、契约扩散点和验证命令 |
 | `docs/archive/README.md` | 说明归档文档仅作历史参考，不再是权威来源 |
+| `scripts/validate_docs.py` | 校验示例或生成文档是否满足基础契约 |
+| `examples/fixtures/` | 保存可验证的生成结果样例 |
 
 ## 为什么对人和 AI 都友好
 
@@ -160,12 +163,14 @@ npx skills add https://github.com/TingRuDeng/project-context-bootstrap
 
 ## 参考实践
 
-本项目的优化方向参考了以下公开实践：
+本项目的优化方向参考了以下公开实践，并做了取舍：
 
-- [AGENTS.md](https://github.com/agentsmd/agents.md)：将代理规则放在固定、可预测的位置。
-- [llms.txt](https://llmstxt.org/)：用短 Markdown 索引帮助 AI 在推理时找到关键内容。
-- [Repomix](https://github.com/yamadashy/repomix)：将代码库打包为适合 AI 分析的结构化上下文。
-- [Gitingest](https://github.com/coderamp-labs/gitingest)：把 Git 仓库转换为提示友好的文本摘要。
+| 项目 | 采纳点 | 未采纳点 |
+| --- | --- | --- |
+| [AGENTS.md](https://github.com/agentsmd/agents.md) | 固定主规则入口，强调开发、测试和 PR 指令 | 不把所有项目知识塞进一个规则文件 |
+| [llms.txt](https://llmstxt.org/) | 固定 Markdown 顺序、短摘要、Optional 区域 | 不要求网站根路径，也不替代仓库规则文件 |
+| [Repomix](https://github.com/yamadashy/repomix) | 上下文预算、排除规则、敏感信息意识 | 不把整个仓库打包成单文件作为默认产物 |
+| [Gitingest](https://github.com/coderamp-labs/gitingest) | prompt-friendly 摘要思路和代码库入口意识 | 不生成完整代码 digest，优先生成权威导航 |
 
 ## 许可证
 
