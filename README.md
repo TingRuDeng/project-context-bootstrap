@@ -1,168 +1,172 @@
 # project-context-bootstrap
 
-A reusable agent skill for building and repairing human-and-agent-facing project context systems in code repositories.
+这是一个可复用的 Codex/Agent 技能，用于把陌生代码仓库整理成对人类维护者和 AI 代理都友好的项目上下文系统。
 
-This skill helps transform a repository into something both human maintainers and future AI agents can enter and work in with less blind scanning, fewer architectural mistakes, and fewer duplicated or stale documentation paths.
+它的目标不是“多生成几份文档”，而是建立一组少而准、可扫读、可抽取、可验证的权威入口，让后续进入仓库的人和代理都能快速知道：
 
-## What This Skill Is For
+- 先读什么。
+- 哪些文档是权威来源。
+- 常见任务从哪些代码入口开始。
+- 哪些契约、历史坑和执行权限不能被误改。
+- 完成任务前如何证明代码、文档和验证结果一致。
 
-Use this skill when a repository needs a reliable human-and-agent-facing context layer, especially if:
+## 适用场景
 
-- the project has little or no agent-facing documentation
-- human onboarding is slow because docs are hard to scan
-- agents repeatedly misread architecture, API contracts, or naming conventions
-- the docs are fragmented, duplicated, or stale
-- the team wants a repeatable repository bootstrap for AI-assisted development
+适合在这些情况下使用：
 
-This skill is designed to create or repair a system centered around:
+- 仓库缺少面向人类和 AI 代理的启动文档。
+- 人类 onboarding 慢，因为文档入口分散、难扫读或过度提示词化。
+- AI 代理经常误读架构、接口契约、权限、命名转换或测试入口。
+- 仓库有重复规则、旧文档、失效链接、泛教程或不可信的历史说明。
+- 团队希望建立可复用的 AI 辅助开发上下文规范。
 
-- a primary repository rule file such as `AGENTS.md` or `CLAUDE.md`
-- `docs/README.md` for navigation
-- stable factual docs such as architecture, API, schema, and pitfalls
-- module-level `README.md` files for tactical entry points
-- `docs/archive/` for historical or superseded material
-- explicit execution boundaries for agents, including branch, commit, push, and merge policy
+不适合在这些情况下使用：
 
-## Two-Phase Workflow
+- 只修一个局部 bug 或实现一个普通业务功能。
+- 仓库已有可信、活跃维护且经过审计的人机双友好上下文系统。
+- 当前任务不涉及仓库上下文设计。
 
-This skill works best as an explicit two-step process:
+## 生成什么
 
-### Phase 1: Build
+该技能会根据仓库实际情况生成或更新以下文件。如果已有等价文件，会优先整合，而不是重复制造入口。
 
-Create the first coherent version of the repository context system:
+| 文件 | 作用 |
+| --- | --- |
+| `AGENTS.md` / `CLAUDE.md` / 等价主规则文件 | 记录执行规则、权限边界、分支、提交、推送、合并和验收证据 |
+| `docs/README.md` | 文档导航入口，告诉人类和代理按任务类型如何阅读 |
+| `docs/AI_CONTEXT.md` | 面向 AI 的短上下文索引，列出权威文档、任务路由和证据入口 |
+| `docs/ARCHITECTURE.md` | 系统形态、模块边界、数据流和中间件行为 |
+| `docs/API_ENDPOINTS.md` | 接口契约、认证、分页、错误和响应约定 |
+| `docs/DATABASE_SCHEMA.md` | 核心模型、迁移约束、索引、状态和软删除规则 |
+| `docs/KNOWN_PITFALLS.md` | 有证据支撑的坑点、局部例外和代理常犯错误 |
+| `docs/TECH_DEBT.md` | 已确认的技术债、影响范围和迁移限制 |
+| `docs/AGENT_STARTER_PROMPT.md` | 可复制到新会话的极短启动提示 |
+| `docs/DOC_SYNC_CHECKLIST.md` | 文档同步验收清单 |
+| `docs/ADR/0001-*.md` | 影响开发行为的首个架构决策记录 |
+| 模块级 `README.md` | 高风险模块的局部入口、契约扩散点和验证命令 |
+| `docs/archive/README.md` | 说明归档文档仅作历史参考，不再是权威来源 |
 
-- establish the primary repository rule file
-- establish `docs/README.md` as the navigation entrypoint
-- create or refine the stable knowledge docs
-- add tactical module `README.md` files where they materially reduce blind scanning
-- archive stale or superseded docs out of the active path
+## 为什么对人和 AI 都友好
 
-### Phase 2: Audit & Repair
+生成文档会遵守同一套人机双友好契约：
 
-Do a dedicated validation pass against the real codebase before treating the docs as trustworthy:
+- 人类可读：每份权威文档都有目的、适合读者、一分钟摘要、权威边界和验证方式。
+- AI 可抽取：每份权威文档都有稳定键名的 `ai_summary` 摘要块，便于代理判断是否读取。
+- 可验证：描述代码现状时必须给出文件路径、函数、类、路由、模型、配置或命令证据。
+- 低重复：主规则、导航、AI 索引、稳定知识、局部模块指南和归档区职责分离。
+- 可维护：未完全验证的 API、模型或路由文档会明确标记为核心概览或已验证子集。
 
-- verify routes, schemas, config, request builders, and model definitions
-- downgrade any doc that implies full coverage without actually having it
-- separate multi-backend or multi-service boundaries explicitly
-- remove weakly evidenced pitfalls and placeholder governance data
-- repair stale references, dead client files, and outdated assumptions
+## 两阶段工作流
 
-Do not treat the first build pass as fully reliable until the audit-and-repair pass is complete.
+### 第一阶段：Build
 
-## What It Produces
+建立第一版可用上下文系统：
 
-Depending on the repository, this skill may generate or refine:
+- 识别仓库语言、框架、入口、路由、配置、数据模型和现有文档。
+- 建立唯一主规则入口。
+- 建立唯一文档导航入口。
+- 建立或整合 `docs/AI_CONTEXT.md` 等 AI 上下文索引。
+- 建立必要的稳定知识文档、局部模块指南和归档边界。
 
-- the repository's primary agent rule file
-- `docs/README.md`
-- `docs/ARCHITECTURE.md`
-- `docs/API_ENDPOINTS.md`
-- `docs/DATABASE_SCHEMA.md`
-- `docs/KNOWN_PITFALLS.md`
-- `docs/TECH_DEBT.md`
-- `docs/AGENT_STARTER_PROMPT.md`
-- `docs/DOC_SYNC_CHECKLIST.md`
-- `docs/ADR/0001-*.md`
-- module-level `README.md` files
-- `docs/archive/README.md`
+第一阶段只代表“可用初稿”，不能视为完全可信。
 
-## Core Principles
+### 第二阶段：Audit & Repair
 
-- Code is the source of truth.
-- Document repository reality, not idealized architecture.
-- Keep one authority source for rules and one authority source for navigation.
-- Make execution boundaries explicit, not implicit.
-- Make authority docs readable by default for humans (quick summaries, explicit audience, clear cross-links).
-- Do not let startup prompts, navigation docs, and local READMEs all restate the same workflow in parallel.
-- Archive stale or superseded docs instead of leaving them in the active path.
-- Treat documentation as a navigation and coordination layer, not a replacement for reading code.
+用真实代码审计第一阶段产物：
 
-## Install
+- 对照路由、schema、serializer、API client、模型、迁移、配置和中间件。
+- 降级未经完整验证却暗示完整覆盖的文档。
+- 区分多后端、多服务、多 API 面。
+- 删除或降级证据不足的坑点。
+- 修复失效链接、占位内容、陈旧客户端和错误归档状态。
 
-Install this standalone skill repo with:
+第二阶段完成后，文档系统才适合被后续人类和代理重复使用。
+
+## 安装
+
+使用技能仓库安装：
 
 ```bash
 npx skills add TingRuDeng/project-context-bootstrap
 ```
 
-Or use the full GitHub URL:
+或使用完整 GitHub 地址：
 
 ```bash
 npx skills add https://github.com/TingRuDeng/project-context-bootstrap
 ```
 
-If your environment supports direct skill folder installation, place `SKILL.md` in a `project-context-bootstrap/` directory under your global skills path.
+如果你的环境支持直接放置技能目录，也可以把 `SKILL.md` 放入全局 skills 路径下的 `project-context-bootstrap/` 目录。
 
-## Usage
+## 使用示例
 
-When invoking this skill, give the agent a concrete repository-level task such as:
-
-### 1. Phase 1: Build a context system from scratch
+### 从零建立上下文系统
 
 ```text
-Please use the project-context-bootstrap skill for this repository.
+请使用 project-context-bootstrap 技能处理当前仓库。
 
-Goal:
-Build a reliable human-and-agent-facing project context system so future AI agents and human maintainers can enter this repo, understand how to start, and develop with less blind scanning and fewer incorrect assumptions.
+目标：
+建立一套对人类维护者和 AI 代理都友好的项目上下文系统，让后续进入仓库的人和代理都能快速知道读什么、信什么、怎么验证、哪些边界不能乱改。
 
-Requirements:
-1. Inspect the repository shape, frameworks, routing, configuration, data model layer, and existing documentation.
-2. Create or refine a single rules entrypoint in the repository's primary agent rule file.
-3. Create or refine a single navigation entrypoint in `docs/README.md`.
-4. Make sure the rule layer documents execution boundaries such as default-branch policy, branching expectations, commit/push permissions, merge authority, and evidence requirements.
-5. Create or refine the stable knowledge docs that are actually justified by the codebase.
-6. Add module-level `README.md` files only for high-value or high-risk code boundaries.
-7. Archive stale, duplicate, generic, or superseded docs under `docs/archive/`.
-8. Ensure authority docs include a concise quick summary and explicit intended audience for human readers.
+要求：
+1. 检查仓库语言、框架、入口、路由、配置、数据模型和现有文档。
+2. 创建或更新唯一主规则入口。
+3. 创建或更新 `docs/README.md` 作为唯一导航入口。
+4. 创建或整合 `docs/AI_CONTEXT.md` 或等价 AI 上下文索引。
+5. 创建或更新经代码证据支撑的稳定知识文档。
+6. 只为高价值或高风险模块添加局部 `README.md`。
+7. 将过期、重复、泛化或被替代的文档移入 `docs/archive/`。
+8. 确保每份权威文档都有目的、适合读者、一分钟摘要、AI 摘要块、权威边界和验证证据。
 
-Constraints:
-- Code is the source of truth.
-- Do not invent architecture facts.
-- Do not duplicate workflow rules across multiple files.
-- If docs conflict with code, fix the docs.
+约束：
+- 代码是事实来源。
+- 不编造架构事实。
+- 不重复规则来源。
+- 不把 AI 友好写成只有机器看得懂。
+- 不让文档暗示未经验证的完整覆盖。
 ```
 
-### 2. Phase 2: Audit and repair an existing system
+### 审计并修复已有上下文系统
 
 ```text
-Please use the project-context-bootstrap skill to audit and repair this repository's existing human-and-agent-facing documentation system.
+请使用 project-context-bootstrap 技能审计并修复当前仓库已有的人机双友好文档系统。
 
-Goal:
-Do not rebuild everything. Identify drift, duplication, stale guidance, dead references, and outdated docs, then bring the system back to a single-source-of-truth structure.
+目标：
+不重建一切，只识别漂移、重复、陈旧、死链接、证据不足和误导性完整声明，并修复到单一权威结构。
 ```
 
-Use this after the initial build pass, or when a repository already has an existing context system that has started to drift.
-
-### 3. Retire stale legacy docs
+### 只归档旧文档
 
 ```text
-Please use the project-context-bootstrap skill, but limit this task to retiring stale legacy documentation.
+请使用 project-context-bootstrap 技能，但本次只处理旧文档归档。
 
-Goal:
-Identify old onboarding docs, generic tutorials, numbered legacy docs, and superseded reference files that are no longer part of the active workflow. Move them out of the active docs path without losing useful history.
+目标：
+识别旧 onboarding、泛教程、编号历史文档和被替代的说明文件，将它们移入 `docs/archive/`，同时保留仍然有价值的事实。
 ```
 
-## Typical Outcome
+## 典型结果
 
-After using this skill well, a repository should have:
+使用得当后，仓库应该具备：
 
-- one obvious rules entrypoint
-- one obvious navigation entrypoint
-- explicit branch / commit / push / merge boundaries for agents
-- authority docs that humans can scan quickly without hidden prompt context
-- tactical local module guides only where they reduce blind scanning
-- startup prompts that point to authority docs instead of duplicating them
-- stale docs archived or clearly marked as non-authoritative
-- no dead references to deleted docs, deleted skills, or nonexistent paths
+- 一个主规则入口。
+- 一个主导航入口。
+- 一个 AI 上下文索引或等价入口。
+- 明确的分支、提交、推送、合并和交付证据规则。
+- 人类能快速扫读的权威文档。
+- AI 能稳定抽取的摘要块、任务路由和证据入口。
+- 只在高价值模块存在的局部指南。
+- 已归档或明确降级的历史文档。
+- 没有指向失效文件、删除技能或不存在路径的活跃引用。
 
-## When Not To Use It
+## 参考实践
 
-Do not use this skill when:
+本项目的优化方向参考了以下公开实践：
 
-- the user only wants a single bugfix or feature change
-- the repository already has a complete and trusted human-and-agent context system
-- the task is local implementation work rather than repository context design
+- [AGENTS.md](https://github.com/agentsmd/agents.md)：将代理规则放在固定、可预测的位置。
+- [llms.txt](https://llmstxt.org/)：用短 Markdown 索引帮助 AI 在推理时找到关键内容。
+- [Repomix](https://github.com/yamadashy/repomix)：将代码库打包为适合 AI 分析的结构化上下文。
+- [Gitingest](https://github.com/coderamp-labs/gitingest)：把 Git 仓库转换为提示友好的文本摘要。
 
-## License
+## 许可证
 
 MIT
