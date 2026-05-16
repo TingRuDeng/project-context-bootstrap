@@ -8,6 +8,8 @@ It is designed for human maintainers and AI coding agents. It is agent-agnostic:
 
 The generated context pack helps AI coding agents understand project structure, build commands, test commands, source-of-truth files, high-risk areas, validation evidence, and stale conditions.
 
+Generated prose should match the target repository and user context. The workflow uses the user's requested language first, then the dominant language of existing docs, then the user's local conversation language, and falls back to English when there is no clear signal.
+
 ## What this project generates
 
 For every software repository, the core output is:
@@ -39,10 +41,10 @@ All authority docs must include:
 - `ai_summary.verify_with`
 - `ai_summary.stale_when`
 - `## Purpose`
-- `## Source Of Truth`
-- `## Key Facts`
-- `## How To Verify`
-- `## Stale When`
+- `## Source of truth`
+- `## Key facts`
+- `## How to verify`
+- `## Stale when`
 
 ## Android MVP profile
 
@@ -76,12 +78,23 @@ The validator checks required files, required headings, complete `ai_summary`, e
 ## Recommended workflow
 
 1. Run the context bootstrap workflow against a target repository.
-2. Generate the core context pack.
-3. If the target is Android, generate the Android profile docs.
-4. Run `validate_docs.py`.
-5. Fix missing paths, weak commands, placeholders, and generic sections.
-6. Commit the context pack.
-7. Ask future AI coding agents to start from `AGENTS.md` and `docs/AI_CONTEXT.md`.
+2. Let the workflow inspect existing docs and choose create mode or upgrade mode.
+3. Choose the documentation language from the user request, existing docs, or local conversation context.
+4. In create mode, generate the core context pack from the repository evidence.
+5. In upgrade mode, preserve accurate existing facts and migrate old docs to the current contract.
+6. If the target is Android, generate or upgrade the Android profile docs.
+7. Run `validate_docs.py`.
+8. Fix missing paths, weak commands, placeholders, and generic sections.
+9. Commit the context pack.
+10. Ask future AI coding agents to start from `AGENTS.md` and `docs/AI_CONTEXT.md`.
+
+## Existing documentation
+
+The workflow supports repositories with or without an existing documentation system.
+
+When no context pack exists, it creates `AGENTS.md`, `docs/README.md`, and `docs/AI_CONTEXT.md`, plus profile docs when a supported technology profile is detected.
+
+When older context docs already exist, it upgrades them in place: it keeps accurate project-specific content, adds missing `ai_summary` metadata, fills concrete `source_of_truth` and `verify_with` evidence, aligns required sections, and removes obsolete generated docs only after useful content has been preserved elsewhere.
 
 ## Tool adapters
 

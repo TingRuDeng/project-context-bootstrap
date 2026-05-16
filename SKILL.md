@@ -21,6 +21,39 @@ Every target repository should receive the core context pack:
 
 `AGENTS.md` is the portable agent instruction entrypoint. `docs/AI_CONTEXT.md` is the concise context map.
 
+## Execution Mode
+
+Before writing files, inspect the target repository and choose one mode:
+
+- Create mode: use this when no recognizable context pack exists. Generate the core context pack from the current repository structure, source files, build files, and test commands.
+- Upgrade mode: use this when the target already has `AGENTS.md`, `docs/README.md`, `docs/AI_CONTEXT.md`, older project-context-bootstrap output, or another local documentation system that serves the same purpose.
+
+In upgrade mode:
+
+1. Read the existing documentation before editing it.
+2. Preserve accurate project-specific facts, paths, commands, constraints, and task-routing guidance.
+3. Convert existing docs to the current authority doc contract.
+4. Add missing `ai_summary` fields, source-of-truth paths, verification commands, stale conditions, and required sections.
+5. Replace placeholder, generic, or unverifiable claims with evidence from the repository.
+6. Remove or consolidate obsolete generated docs only when their useful content has been moved into the current context pack.
+7. Keep manual product, design, architecture, and operations docs intact unless they directly conflict with the context pack.
+8. Report whether the run created a new context pack or upgraded an existing one.
+
+Do not overwrite useful existing documentation just because a template exists. Templates define the target shape; the target repository defines the facts.
+
+## Documentation Language
+
+Choose the generated documentation language from the target repository and user context:
+
+1. If the user explicitly requests a language, use that language.
+2. Otherwise, match the dominant language of existing project docs, especially `README.md`, `docs/`, and existing context-pack files.
+3. If there is no existing documentation signal, match the user's local conversation language when it is clear.
+4. If the language is still unclear, use English for maximum portability.
+
+Keep file names, code identifiers, commands, package names, Gradle task names, and source paths exactly as they appear in the repository. Translate explanatory prose only.
+
+For upgrade mode, preserve the existing documentation language unless the user asks to change it. If a repository already mixes languages, keep each document internally consistent and prefer the language used by its nearest existing source document.
+
 ## Android MVP Output
 
 If the target repository is an Android project, also generate:
@@ -65,10 +98,10 @@ ai_summary:
 Every authority doc body must include:
 
 - `## Purpose`
-- `## Source Of Truth`
-- `## Key Facts`
-- `## How To Verify`
-- `## Stale When`
+- `## Source of truth`
+- `## Key facts`
+- `## How to verify`
+- `## Stale when`
 
 Do not accept placeholder, generic, or unverifiable content.
 
@@ -77,16 +110,18 @@ Do not accept placeholder, generic, or unverifiable content.
 Follow this sequence:
 
 1. Scan the target repository structure.
-2. Identify technology stack and profile.
-3. Locate source-of-truth files and directories.
-4. Generate `AGENTS.md`.
-5. Generate `docs/README.md`.
-6. Generate `docs/AI_CONTEXT.md`.
-7. If the target is Android, generate the four Android authority docs.
-8. Fill every authority doc with real `source_of_truth` paths and concrete `verify_with` commands.
-9. Run `scripts/validate_docs.py` with the matching profile.
-10. Fix validation errors before reporting completion.
-11. Report changed files, validation commands, validation results, and remaining risks.
+2. Detect whether this is a create run or an upgrade run.
+3. Choose the documentation language.
+4. Identify technology stack and profile.
+5. Locate source-of-truth files and directories.
+6. Generate or upgrade `AGENTS.md`.
+7. Generate or upgrade `docs/README.md`.
+8. Generate or upgrade `docs/AI_CONTEXT.md`.
+9. If the target is Android, generate or upgrade the four Android authority docs.
+10. Fill every authority doc with real `source_of_truth` paths and concrete `verify_with` commands.
+11. Run `scripts/validate_docs.py` with the matching profile.
+12. Fix validation errors before reporting completion.
+13. Report changed files, execution mode, documentation language, validation commands, validation results, and remaining risks.
 
 ## Core Context Rules
 
