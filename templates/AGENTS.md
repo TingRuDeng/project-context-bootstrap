@@ -36,14 +36,33 @@ Examples:
 
 ## Validation commands
 
-List exact commands.
+List exact commands grouped by cost and side effect.
 
 Examples:
 
+Quick:
+
+```bash
+./gradlew :app:testDebugUnitTest
+python3 scripts/validate_docs.py . --profile android
+```
+
+Full:
+
 ```bash
 ./gradlew :app:assembleDebug
-./gradlew :app:testDebugUnitTest
+./gradlew :app:lintDebug
 ```
+
+Device-required:
+
+```bash
+./gradlew :app:connectedDebugAndroidTest
+```
+
+Release-side-effect:
+
+List only if the command creates, signs, publishes, uploads, or synchronizes artifacts.
 
 ## Task routing
 

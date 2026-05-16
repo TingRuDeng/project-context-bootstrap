@@ -41,10 +41,21 @@ Document the Android fixture Gradle modules, build types, product flavors, build
 
 ## How to verify
 
+Quick:
+
 ```bash
-./gradlew :app:assembleDemoDebug
 ./gradlew :app:testDemoDebugUnitTest
 ```
+
+Full:
+
+```bash
+./gradlew :app:assembleDemoDebug
+```
+
+Release-side-effect:
+
+None in this fixture.
 
 ## Stale when
 

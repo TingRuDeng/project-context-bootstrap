@@ -37,7 +37,12 @@ List boundaries where unsupported edits are likely to break the project.
 
 ## Validation Commands
 
-List exact commands that prove the context pack and common code changes are valid.
+List exact commands by tier:
+
+- Quick: local, low-cost checks.
+- Full: broader local regression.
+- Device-required: emulator, device, external service, or credentials needed.
+- Release-side-effect: creates, signs, publishes, uploads, or synchronizes artifacts.
 
 ## Stale when
 

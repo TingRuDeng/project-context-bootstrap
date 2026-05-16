@@ -17,6 +17,7 @@ For every software repository, the core output is:
 - `AGENTS.md`
 - `docs/README.md`
 - `docs/AI_CONTEXT.md`
+- `scripts/validate_docs.py`
 
 For Android projects, the Android MVP profile adds:
 
@@ -32,6 +33,8 @@ For Android projects, the Android MVP profile adds:
 `docs/README.md` is the generated docs index.
 
 `docs/AI_CONTEXT.md` is the concise context map for AI coding agents.
+
+`scripts/validate_docs.py` is the canonical validator. The workflow should copy or upgrade this validator in target repositories instead of generating a simplified local variant.
 
 All authority docs must include:
 
@@ -75,6 +78,8 @@ python3 scripts/validate_docs.py examples/fixtures/android-client-context --prof
 
 The validator checks required files, required headings, complete `ai_summary`, existing `source_of_truth` paths, concrete `verify_with` commands, placeholders, and generic sections.
 
+Generic-content detection covers common English and Chinese placeholders such as `Run tests`, `Check manually`, `Follow best practices`, `运行测试`, `手动确认`, and `遵循最佳实践`.
+
 ## Recommended workflow
 
 1. Run the context bootstrap workflow against a target repository.
@@ -83,10 +88,12 @@ The validator checks required files, required headings, complete `ai_summary`, e
 4. In create mode, generate the core context pack from the repository evidence.
 5. In upgrade mode, preserve accurate existing facts and migrate old docs to the current contract.
 6. If the target is Android, generate or upgrade the Android profile docs.
-7. Run `validate_docs.py`.
-8. Fix missing paths, weak commands, placeholders, and generic sections.
-9. Commit the context pack.
-10. Ask future AI coding agents to start from `AGENTS.md` and `docs/AI_CONTEXT.md`.
+7. Install or upgrade the canonical `scripts/validate_docs.py`.
+8. Split verification commands into quick, full, device-required, and release-side-effect groups when cost or side effects differ.
+9. Run `validate_docs.py`.
+10. Fix missing paths, weak commands, placeholders, and generic sections.
+11. Commit the context pack.
+12. Ask future AI coding agents to start from `AGENTS.md` and `docs/AI_CONTEXT.md`.
 
 ## Existing documentation
 
@@ -95,6 +102,8 @@ The workflow supports repositories with or without an existing documentation sys
 When no context pack exists, it creates `AGENTS.md`, `docs/README.md`, and `docs/AI_CONTEXT.md`, plus profile docs when a supported technology profile is detected.
 
 When older context docs already exist, it upgrades them in place: it keeps accurate project-specific content, adds missing `ai_summary` metadata, fills concrete `source_of_truth` and `verify_with` evidence, aligns required sections, and removes obsolete generated docs only after useful content has been preserved elsewhere.
+
+When non-generated legacy docs are indexed as detail docs, the workflow either adds lightweight freshness metadata to those docs or clearly labels them in `docs/README.md` as legacy detail docs with freshness limits.
 
 ## Tool adapters
 

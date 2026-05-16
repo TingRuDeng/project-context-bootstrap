@@ -28,15 +28,22 @@ Document Android fixture test types, test directories, Gradle test tasks, and wh
 
 ## Key facts
 
-| Test type | Path | Command | Use when |
-| --- | --- | --- | --- |
-| Local unit tests | `app/src/test/` | `./gradlew :app:testDemoDebugUnitTest` | Pure JVM logic |
-| Instrumented tests | `app/src/androidTest/` | `./gradlew :app:connectedDemoDebugAndroidTest` | Android framework behavior |
+| Test type | Tier | Path | Command | Use when |
+| --- | --- | --- | --- | --- |
+| Local unit tests | quick | `app/src/test/` | `./gradlew :app:testDemoDebugUnitTest` | Pure JVM logic |
+| Instrumented tests | device-required | `app/src/androidTest/` | `./gradlew :app:connectedDemoDebugAndroidTest` | Android framework behavior |
 
 ## How to verify
 
+Quick:
+
 ```bash
 ./gradlew :app:testDemoDebugUnitTest
+```
+
+Device-required:
+
+```bash
 ./gradlew :app:connectedDemoDebugAndroidTest
 ```
 

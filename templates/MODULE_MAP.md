@@ -32,9 +32,15 @@ List Gradle settings, module build files, and source directories that define mod
 
 ## How to verify
 
+Quick:
+
 ```bash
 ./gradlew :app:assembleDemoDebug
 ```
+
+Full:
+
+List broader module regression commands when module boundaries or dependencies change.
 
 ## Stale when
 

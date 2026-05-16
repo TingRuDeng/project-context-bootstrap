@@ -34,8 +34,16 @@ Document Android fixture manifest paths, exported components, permissions, inten
 
 ## How to verify
 
+Quick:
+
 ```bash
 ./gradlew :app:processDemoDebugMainManifest
+```
+
+Full:
+
+```bash
+./gradlew :app:lintDemoDebug
 ```
 
 ## Stale when

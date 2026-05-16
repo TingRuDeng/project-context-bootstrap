@@ -35,10 +35,21 @@ List Gradle files that define modules, plugins, flavors, build types, and signin
 
 ## How to verify
 
+Quick:
+
 ```bash
-./gradlew :app:assembleDemoDebug
 ./gradlew :app:testDemoDebugUnitTest
 ```
+
+Full:
+
+```bash
+./gradlew :app:assembleDemoDebug
+```
+
+Release-side-effect:
+
+List signing, publishing, upload, or artifact synchronization commands only when they exist.
 
 ## Stale when
 

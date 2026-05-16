@@ -37,9 +37,15 @@ Document Android fixture module responsibilities, source paths, allowed dependen
 
 ## How to verify
 
+Quick:
+
 ```bash
 ./gradlew :app:assembleDemoDebug
 ```
+
+Full:
+
+Use the same command in this fixture because module graph changes are covered by the demo debug build.
 
 ## Stale when
 

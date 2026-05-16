@@ -51,8 +51,23 @@ ai_summary:
 
 ## Validation Commands
 
+Quick:
+
 ```bash
 python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android
+```
+
+Full:
+
+```bash
+./gradlew :app:assembleDemoDebug
+./gradlew :app:testDemoDebugUnitTest
+```
+
+Device-required:
+
+```bash
+./gradlew :app:connectedDemoDebugAndroidTest
 ```
 
 ## Stale when

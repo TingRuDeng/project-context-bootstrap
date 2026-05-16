@@ -32,8 +32,16 @@ List Android manifest files and Gradle build files that influence manifest merge
 
 ## How to verify
 
+Quick:
+
 ```bash
 ./gradlew :app:processDemoDebugMainManifest
+```
+
+Full:
+
+```bash
+./gradlew :app:lintDemoDebug
 ```
 
 ## Stale when

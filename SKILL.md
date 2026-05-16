@@ -18,8 +18,10 @@ Every target repository should receive the core context pack:
 - `AGENTS.md`
 - `docs/README.md`
 - `docs/AI_CONTEXT.md`
+- `scripts/validate_docs.py`
 
 `AGENTS.md` is the portable agent instruction entrypoint. `docs/AI_CONTEXT.md` is the concise context map.
+`scripts/validate_docs.py` is the canonical validation script for the generated context pack.
 
 ## Execution Mode
 
@@ -37,9 +39,30 @@ In upgrade mode:
 5. Replace placeholder, generic, or unverifiable claims with evidence from the repository.
 6. Remove or consolidate obsolete generated docs only when their useful content has been moved into the current context pack.
 7. Keep manual product, design, architecture, and operations docs intact unless they directly conflict with the context pack.
-8. Report whether the run created a new context pack or upgraded an existing one.
+8. If legacy detail docs are indexed from `docs/README.md`, either add lightweight `ai_summary` frontmatter to those docs or label them as legacy detail docs with freshness limits in the index.
+9. Report whether the run created a new context pack or upgraded an existing one.
 
 Do not overwrite useful existing documentation just because a template exists. Templates define the target shape; the target repository defines the facts.
+
+## Validator Output
+
+When writing or upgrading a target repository, install or update `scripts/validate_docs.py` from this project as the canonical validator.
+
+Do not rewrite a simplified validator in the target project. The target validator must preserve these checks:
+
+- required files for `generic` and `android` profiles
+- required authority doc headings
+- complete and non-empty `ai_summary`
+- existing local `source_of_truth` paths
+- concrete `verify_with` commands
+- placeholder and generic-content rejection, including English and Chinese generic phrases
+- local Markdown link checks
+
+If the target repository already has a validator, compare it against the canonical behavior and upgrade it in place. After writing it, run:
+
+```bash
+python3 -m py_compile scripts/validate_docs.py
+```
 
 ## Documentation Language
 
@@ -105,6 +128,17 @@ Every authority doc body must include:
 
 Do not accept placeholder, generic, or unverifiable content.
 
+## Verification Command Tiers
+
+Separate verification commands by cost and side effect whenever a document lists more than one command:
+
+- `quick`: local, low-cost checks suitable after small edits.
+- `full`: broader local regression checks.
+- `device-required`: commands that require an emulator, physical device, external service, or credentials.
+- `release-side-effect`: commands that create, sign, publish, upload, or synchronize artifacts.
+
+Do not present `device-required` or `release-side-effect` commands as ordinary quick validation. Keep command strings exact and add prerequisite notes when needed.
+
 ## Workflow
 
 Follow this sequence:
@@ -118,10 +152,11 @@ Follow this sequence:
 7. Generate or upgrade `docs/README.md`.
 8. Generate or upgrade `docs/AI_CONTEXT.md`.
 9. If the target is Android, generate or upgrade the four Android authority docs.
-10. Fill every authority doc with real `source_of_truth` paths and concrete `verify_with` commands.
-11. Run `scripts/validate_docs.py` with the matching profile.
-12. Fix validation errors before reporting completion.
-13. Report changed files, execution mode, documentation language, validation commands, validation results, and remaining risks.
+10. Install or upgrade the canonical `scripts/validate_docs.py`.
+11. Fill every authority doc with real `source_of_truth` paths and concrete tiered `verify_with` commands.
+12. Run `scripts/validate_docs.py` with the matching profile.
+13. Fix validation errors before reporting completion.
+14. Report changed files, execution mode, documentation language, validation commands, validation results, and remaining risks.
 
 ## Core Context Rules
 

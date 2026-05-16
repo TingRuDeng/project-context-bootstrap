@@ -27,10 +27,23 @@ For Android-specific work, also read:
 
 ## Validation commands
 
+Quick:
+
 ```bash
-./gradlew :app:assembleDemoDebug
 ./gradlew :app:testDemoDebugUnitTest
 python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android
+```
+
+Full:
+
+```bash
+./gradlew :app:assembleDemoDebug
+```
+
+Device-required:
+
+```bash
+./gradlew :app:connectedDemoDebugAndroidTest
 ```
 
 ## Task routing

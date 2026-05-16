@@ -176,6 +176,27 @@ class ValidateDocsTest(unittest.TestCase):
 
         self.assertTrue(has_issue(issues, "章节 ## Key facts 内容过于空泛"))
 
+    def test_verify_with_chinese_natural_language_is_reported(self):
+        content = VALID_FRONTMATTER_DOC.replace(
+            "python3 -m unittest tests/test_validate_docs.py",
+            "手动确认",
+        )
+
+        issues = validate_single_doc(content)
+
+        self.assertTrue(has_issue(issues, "verify_with 不是具体命令"))
+
+    def test_chinese_generic_section_is_reported(self):
+        content = replace_section(
+            VALID_FRONTMATTER_DOC,
+            "## How to verify",
+            "运行测试",
+        )
+
+        issues = validate_single_doc(content)
+
+        self.assertTrue(has_issue(issues, "章节 ## How to verify 内容过于空泛"))
+
 def write_file(path, content):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
