@@ -1,29 +1,44 @@
+---
+ai_summary:
+  purpose: "Concise context map for AI coding agents."
+  read_when:
+    - "Before making code changes."
+    - "When deciding which authority docs to inspect."
+  source_of_truth:
+    - "AGENTS.md"
+    - "docs/README.md"
+  verify_with:
+    - "python3 scripts/validate_docs.py . --profile generic"
+  stale_when:
+    - "Project structure, build commands, or authority docs change."
+---
+
 # AI Context
 
-> 用一句话说明本仓库是什么，以及 AI 读取本文件能解决什么问题。
+## Project Snapshot
 
-## 权威文档地图
+Describe the repository purpose, primary language, framework, and runtime in three to five bullets.
 
-- `README.md`: 说明每份文档的职责、读者和阅读顺序。
-- `ARCHITECTURE.md`: 说明系统边界、模块关系和关键数据流。
+## Core Directories
 
-## 任务读取路径
+List the source, test, configuration, and documentation directories that an AI coding agent should inspect first.
 
-- 修改 API：先读 `README.md`，再读 `API_ENDPOINTS.md`，最后核对真实路由和客户端调用。
-- 修改数据模型：先读 `DATABASE_SCHEMA.md`，再核对模型、迁移和测试。
-- 修改模块逻辑：先读目标模块 `README.md`，再核对实现文件。
+## Documentation Map
 
-## 关键证据入口
+Map authority docs to the questions they answer.
 
-- `path/to/router.py:function_name`
-- `path/to/schema.py:ClassName`
-- `path/to/test_file.py::test_name`
+## Common Task Reading Paths
 
-## 高风险误读点
+Route common task types to the minimum docs and source files needed.
 
-- 不要把未验证的接口列表当成完整 API 目录。
-- 不要把局部模块例外推广成全局规则。
+## High-Risk Areas
 
-## Optional
+List boundaries where unsupported edits are likely to break the project.
 
-- `archive/README.md`: 只在追溯旧决策时读取。
+## Validation Commands
+
+List exact commands that prove the context pack and common code changes are valid.
+
+## Stale when
+
+List the repository changes that require regenerating or updating this context map.

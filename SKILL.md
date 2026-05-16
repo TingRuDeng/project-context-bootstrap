@@ -1,269 +1,145 @@
 ---
 name: project-context-bootstrap
-description: 进入陌生或文档薄弱的代码仓库时使用，帮助建立对人类维护者和 AI 代理都友好的项目上下文、导航、规则和验收体系。
+description: Generate an agent-agnostic, evidence-backed context pack for software repositories, with Android MVP profile support.
 ---
 
 # Project Context Bootstrap
-## 总览
 
-使用本技能，把一个陌生代码仓库整理成“人能快速进入、AI 能稳定执行”的上下文系统。
+## Purpose
 
-本技能不是为了生成更多文档，而是为了生成一组高信号、低重复、可验证的权威文档，回答这些问题：
+Use this workflow to generate an agent-agnostic context pack for a software repository.
 
-- 人类维护者和 AI 代理进入仓库后先读什么。
-- 仓库的系统边界、模块边界、数据流和契约在哪里。
-- 常见任务应该从哪些文件开始，不应盲扫全仓。
-- 哪些历史坑、兼容边界和执行权限不能被随意改动。
-- 变更完成前如何证明文档、代码和验证结果保持一致。
+The generated context pack must be useful to human maintainers and any AI coding agent. It must not make core behavior specific to Codex, Claude Code, GitHub Copilot, Cursor, Gemini CLI, OpenHands, Aider, or any single AI coding agent.
 
-## 使用场景
+## Core Output
 
-适合使用本技能的情况：
+Every target repository should receive the core context pack:
 
-- 仓库缺少面向人类和代理的入口文档。
-- 人类 onboarding 慢，因为文档难扫读、入口分散或过度提示词化。
-- AI 代理经常误读架构、接口契约、命名转换、权限边界或测试入口。
-- 仓库存在多个规则文件、旧文档、重复说明或失效链接。
-- 团队希望建立可复用的 AI 辅助开发启动规范。
+- `AGENTS.md`
+- `docs/README.md`
+- `docs/AI_CONTEXT.md`
 
-不适合使用本技能的情况：
+`AGENTS.md` is the portable agent instruction entrypoint. `docs/AI_CONTEXT.md` is the concise context map.
 
-- 用户只要求修一个局部 bug 或实现一个局部功能。
-- 仓库已有可信、活跃维护且经过审计的人机双友好上下文系统。
-- 当前任务只是普通业务开发，不涉及仓库上下文设计。
+## Android MVP Output
 
-## 目标产物
+If the target repository is an Android project, also generate:
 
-只生成或更新能显著降低理解成本和误操作风险的文件。如果仓库已有等价文件，优先整合，不重复制造入口。
+- `docs/BUILD_MATRIX.md`
+- `docs/MODULE_MAP.md`
+- `docs/TESTING_MATRIX.md`
+- `docs/MANIFEST_AND_PERMISSIONS.md`
 
-- 仓库主规则文件，例如 `AGENTS.md`、`CLAUDE.md` 或等价文件。
-- `docs/README.md`：文档导航入口。
-- `docs/AI_CONTEXT.md`：面向 AI 的短上下文索引；当仓库已有 `llms.txt`、`repomix-instruction.md` 或等价文件时，整合到现有入口。
-- `templates/AI_CONTEXT.md`：本技能自带的 AI 上下文索引模板。
-- `docs/ARCHITECTURE.md`：系统形态、模块边界、关键数据流和中间件行为。
-- `docs/API_ENDPOINTS.md`：接口契约、分页、响应包裹、认证和错误约定。
-- `docs/DATABASE_SCHEMA.md`：核心模型、迁移约束、审计字段、状态和软删除规则。
-- `docs/KNOWN_PITFALLS.md`：有证据支撑的坑点、兼容例外和容易误读的局部规则。
-- `docs/TECH_DEBT.md`：已确认的历史债务、迁移限制和不能被误当成全局规范的例外。
-- `docs/AGENT_STARTER_PROMPT.md`：可复制到新会话的极短启动提示。
-- `docs/DOC_SYNC_CHECKLIST.md`：文档同步验收清单。
-- `docs/ADR/0001-*.md`：影响开发行为的首个架构决策记录。
-- 高价值模块的局部 `README.md`：只写本模块职责、入口、契约扩散点和局部坑点。
-- `docs/archive/README.md`：当存在历史文档时，说明归档区非权威。
+The Android MVP profile covers Gradle modules, build variants, module boundaries, test commands, manifest entries, exported components, and permissions.
 
-## 人机双友好文档契约
+## Android Detection
 
-所有权威文档都必须同时满足人类扫读和 AI 抽取需求。
+Treat a repository as Android when one or more of these signals are present:
 
-### 人类可读结构
+- `settings.gradle` or `settings.gradle.kts`
+- `build.gradle` or `build.gradle.kts`
+- `AndroidManifest.xml`
+- `com.android.application` or `com.android.library` in Gradle files
 
-每个权威文档开头必须包含：
+Use the signals as a starting point, then verify the real file tree before writing docs.
 
-- `目的`：本文件解决什么问题。
-- `适合读者`：谁应该读，例如后端、前端、测试、代理执行者、代码审查者。
-- `一分钟摘要`：用短列表说明最重要结论。
-- `权威边界`：本文件负责什么，不负责什么，冲突时应信任哪个文件或代码入口。
-- `如何验证`：列出实际检查过的代码入口、配置入口、路由入口或命令。
+## Authority Doc Contract
 
-正文应优先使用短段落、表格、清晰标题和明确交叉链接。第一次出现仓库内术语时，要解释它在本仓库中的具体含义。
-
-### AI 可抽取结构
-
-每个权威文档必须包含一个短的“AI 摘要块”，使用稳定键名，便于代理快速判断是否应该读取该文件。
+Every generated authority doc must include frontmatter:
 
 ```yaml
+---
 ai_summary:
-  authority: "本文件的权威职责"
-  scope: "覆盖范围"
+  purpose: "Concrete purpose of this document."
   read_when:
-    - "触发读取的任务类型"
+    - "Specific task that should read this document."
+  source_of_truth:
+    - "Real path that exists in the target repository."
   verify_with:
-    - "代码或配置证据入口"
+    - "Concrete command that can be run."
   stale_when:
-    - "哪些变更会让本文件过期"
+    - "Concrete change that makes the document stale."
+---
 ```
 
-AI 摘要块只能写已验证事实，不写愿望、路线图或未经确认的猜测。
+Every authority doc body must include:
 
-### 证据锚点
+- `## Purpose`
+- `## Source Of Truth`
+- `## Key Facts`
+- `## How To Verify`
+- `## Stale When`
 
-描述代码现状时必须给出可追踪证据，优先使用：
+Do not accept placeholder, generic, or unverifiable content.
 
-- 文件路径加函数、类、路由、模型、配置项或命令名。
-- 路由表、schema、serializer、migration、API client、构建配置等真实契约点。
-- 已运行命令的名称和关键结果。
+## Workflow
 
-不要只写“通常如此”“框架默认如此”或“应该是这样”。代码与文档冲突时，信任代码，并在同一次变更里修正文档。
+Follow this sequence:
 
-### 上下文预算
+1. Scan the target repository structure.
+2. Identify technology stack and profile.
+3. Locate source-of-truth files and directories.
+4. Generate `AGENTS.md`.
+5. Generate `docs/README.md`.
+6. Generate `docs/AI_CONTEXT.md`.
+7. If the target is Android, generate the four Android authority docs.
+8. Fill every authority doc with real `source_of_truth` paths and concrete `verify_with` commands.
+9. Run `scripts/validate_docs.py` with the matching profile.
+10. Fix validation errors before reporting completion.
+11. Report changed files, validation commands, validation results, and remaining risks.
 
-文档要可被人读完，也要可被 AI 放入上下文：
+## Core Context Rules
 
-- 主规则文件只放工作规则和执行边界，不复述架构正文。
-- `docs/README.md` 只负责导航和阅读路径，不复制各文档内容。
-- `docs/AI_CONTEXT.md` 只放最短权威索引、任务路由和证据入口，不写长篇说明。
-- 模块 `README.md` 只写本模块本地规则，不复制顶层流程。
-- 归档文档必须明确标记为历史资料，不能继续充当入口。
+- Keep core docs agent-agnostic.
+- Keep `AGENTS.md` as a routing file, not a knowledge dump.
+- Keep `docs/AI_CONTEXT.md` concise.
+- Prefer concrete paths, commands, module names, and stale conditions.
+- Do not duplicate long content across files.
+- If docs and code disagree, trust the code and repair the docs.
 
-## 两阶段执行模型
+## Android MVP Rules
 
-### 第一阶段：Build
+Android MVP support is limited to:
 
-建立第一版可用上下文系统：
+- Gradle modules and build variants.
+- Module responsibilities and dependency boundaries.
+- Test source sets and Gradle test commands.
+- Manifest paths, exported components, permissions, and intent filters.
 
-- 识别仓库语言、框架、入口、路由、配置、数据模型和现有文档。
-- 建立一个主规则入口，明确执行权限、分支、提交、推送、合并和验收证据。
-- 建立一个导航入口，告诉人类和代理按任务类型如何阅读。
-- 建立一个 AI 上下文索引，让代理能快速定位权威文件和证据入口。
-- 建立必要的稳定知识文档、局部模块指南和归档边界。
-- 若仓库已有校验脚本，必须让新增文档通过校验；若没有脚本，至少按完成检查逐项自检。
+Do not add Android navigation, Room migrations, WorkManager, release operations, performance docs, or other non-MVP Android docs unless explicitly requested.
 
-第一阶段产物不能被视为完全可信，必须进入第二阶段审计。
+## Tool Adapters
 
-### 第二阶段：Audit & Repair
+Tool-specific adapters are future optional work:
 
-用真实代码审计第一阶段文档：
+- `CLAUDE.md`
+- `.github/copilot-instructions.md`
+- `.cursor/rules/`
+- `GEMINI.md`
+- `llms.txt`
 
-- 检查路由、schema、serializer、API client、模型、迁移、配置和中间件。
-- 降级任何未完全验证却暗示“完整覆盖”的文档。
-- 区分多后端、多服务、多 API 面，不把不同系统压成一个故事。
-- 删除或降级证据不足的坑点。
-- 修复失效链接、陈旧客户端、占位债务、伪完成记录和错误归档状态。
+MVP must not generate these files. Future adapters should point to the core context pack instead of duplicating it.
 
-只有第二阶段完成后，才能说该仓库上下文系统适合重复使用。
+## Validation
 
-## 核心规则
+Run:
 
-1. 代码是最终事实来源。
-2. 记录仓库现实，不把历史命名、局部例外或技术债强行改写成通用最佳实践。
-3. 优先寻找框架魔法、全局中间件和隐式转换，不只看显眼的业务代码。
-4. 每类关键信息只能有一个权威来源：规则、导航、事实、归档和局部模块指南要分工清楚。
-5. 旧文档要合并、归档或明确降级，不能留在活跃路径误导人和代理。
-6. 未做完整覆盖检查的 API、模型或路由文档，必须标记为“核心概览”或“已验证子集”。
-7. 坑点必须有代码、配置、日志、测试失败或重复验证记录支撑。
-8. 债务文档不能出现占位日期、模板残留或未证实的治理信息。
-9. 任何生成文档都必须默认兼顾人类扫读、AI 路由、证据追踪和上下文预算。
-
-## 推荐阅读协议
-
-把以下顺序写入生成文档：
-
-1. 先读仓库主规则文件。
-2. 再读 `docs/README.md`。
-3. 需要执行任务时，读目标模块的局部 `README.md`。
-4. 需要快速路由或给 AI 会话喂上下文时，读 `docs/AI_CONTEXT.md` 或等价索引。
-5. 修改前检查真实代码路径，验证名称、契约和逻辑。
-6. 文档与代码冲突时信任代码，并在同一变更中修正文档。
-7. 关闭任务前运行文档同步清单；如果没有文档影响，明确写出原因。
-
-## 生成规则层
-
-主规则文件必须回答：
-
-- 仓库包含什么，启动检查清单是什么。
-- 不同任务类型应从哪些文档和代码入口开始。
-- 修改 API、权限、数据库、前端页面、构建流程前必须做哪些检查。
-- 哪些边界不能随意改，例如安全、鉴权、数据迁移、兼容格式。
-- 代理是否允许直接在默认分支工作。
-- 何时必须建分支。
-- 哪些角色可以提交、推送、合并。
-- 完成任务前需要提供哪些验证和交付证据。
-- 文档同步清单是否是强制完成门禁。
-
-如果仓库有多种代理角色，应分别记录交互助手、执行 worker、审查控制者的权限，不要写成一个模糊的统一规则。
-
-## 生成导航层
-
-`docs/README.md` 必须回答：
-
-- 每份文档的职责、权威级别和目标读者。
-- 人类维护者首次进入仓库应该如何阅读。
-- AI 代理按任务类型应该如何选择上下文。
-- 哪些章节适合脚本更新，例如接口列表、schema 摘要、目录索引。
-- 哪些章节必须人工维护，例如 ADR、坑点、技术债和执行边界。
-- `docs/AI_CONTEXT.md`、启动提示和文档同步清单在哪里。
-
-它应该像启动手册，不应该像项目宣传页。
-
-## 生成 AI 上下文索引
-
-当仓库会被 AI 代理重复使用时，生成或整合 `docs/AI_CONTEXT.md`，默认以 `templates/AI_CONTEXT.md` 为结构来源。
-
-固定章节顺序：
-
-1. `# AI Context`
-2. blockquote：一句话说明仓库用途和本文件价值。
-3. `## 权威文档地图`
-4. `## 任务读取路径`
-5. `## 关键证据入口`
-6. `## 高风险误读点`
-7. `## Optional`
-
-`Optional` 只能放可跳过内容，适合历史归档、长参考、生成摘要或低频任务。该结构借鉴 `llms.txt` 的固定 Markdown 顺序和 Optional 区域，但面向代码仓库上下文，不替代 `AGENTS.md` 的执行规则。
-
-如果仓库已有 `llms.txt`、`repomix-instruction.md`、`gitingest` 输出说明或等价 AI 索引，不要重复创建第二个入口；应选择最权威的入口，并让其他文件指向它。
-
-## 生成稳定知识层
-
-稳定知识层必须事实性强、篇幅短、可验证：
-
-- `docs/ARCHITECTURE.md`：系统形态、模块边界、主要数据流、跨层依赖和中间件行为。
-- `docs/API_ENDPOINTS.md`：接口契约模式、认证、分页、错误、响应包裹和接口所有权。
-- `docs/DATABASE_SCHEMA.md`：核心实体、迁移约束、索引、状态、审计字段和软删除策略。
-- `docs/KNOWN_PITFALLS.md`：有证据的局部例外、兼容坑、代理常犯错误。
-- `docs/TECH_DEBT.md`：已确认的债务、影响范围、不能顺手修的原因和未来迁移条件。
-
-每份稳定文档都要包含“如何验证”，并列出具体代码入口。没有覆盖全部路由、模型或模块时，标题或摘要必须说明覆盖范围。
-
-## 生成局部模块指南
-
-只为高变更、高风险或入口复杂的模块创建局部 `README.md`。
-
-局部指南必须包含：
-
-- 模块职责。
-- 常用入口文件和真实文件名。
-- 修改会扩散到哪里。
-- 局部测试或验证命令。
-- 不应被泛化成全局规则的特殊情况。
-
-局部指南不能复制主规则文件，也不能把全仓架构重新写一遍。
-
-## 归档与去重
-
-发现旧 onboarding、编号文档、泛教程、废弃技能引用或失效路径时，逐项判断：
-
-- 有唯一事实：先合并到当前权威文档，再归档。
-- 只有历史价值：移动到 `docs/archive/`。
-- 没有唯一价值：只有在用户明确允许清理时才删除。
-
-归档区必须说明历史文档不是当前开发权威来源。
-
-## 完成检查
-
-完成后确认：
-
-- 只有一个主规则入口。
-- 只有一个主导航入口。
-- 只有一个 AI 上下文索引或等价入口。
-- 主规则文件明确执行权限、分支、提交、推送、合并和验收证据。
-- 文档同步清单是任务完成门禁，并有“无文档影响”的明确路径。
-- 每份权威文档都有目的、适合读者、一分钟摘要、AI 摘要块、权威边界和验证证据。
-- 若本仓库或目标仓库存在 `scripts/validate_docs.py` 等校验脚本，必须运行并通过。
-- 失效链接、占位内容、弱证据坑点和伪完整声明已处理。
-- 多后端、多服务、多 API 面被显式区分。
-- 归档文档不会被误读为活跃权威。
-
-## 提示模板
-
-### 从零建立上下文系统
-
-```text
-请使用 project-context-bootstrap 技能处理当前仓库。检查语言、框架、入口、路由、配置、数据模型和现有文档；创建或更新唯一主规则入口、`docs/README.md`、`docs/AI_CONTEXT.md`、必要稳定知识文档、局部 README 和归档边界。确保每份权威文档具备目的、适合读者、一分钟摘要、AI 摘要块、权威边界和验证证据。代码是事实来源，不编造架构事实，不重复规则来源，不暗示未经验证的完整覆盖。完成后报告新增、更新、归档、代码验证证据、人类可读性改进和剩余风险。
+```bash
+python3 scripts/validate_docs.py <context-root> --profile generic
+python3 scripts/validate_docs.py <context-root> --profile android
 ```
 
-### 审计并修复已有上下文系统
+For this repository, run:
 
-```text
-请使用 project-context-bootstrap 技能审计并修复当前仓库已有的人机双友好文档系统。不重建一切，只识别并修复漂移、重复、陈旧、死链接、证据不足和误导性完整声明。重点检查是否只有一个主规则入口、一个主导航入口、一个 AI 上下文索引或等价入口；启动提示是否指向权威文档；权威文档是否具备双受众结构和验证证据；文档同步清单是否是完成门禁；归档文档是否仍被误当作活跃入口。
+```bash
+python3 -m unittest tests/test_validate_docs.py
+python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android
 ```
+
+## Do Not
+
+- Do not make this project specific to one AI coding agent.
+- Do not make templates depend on one AI tool.
+- Do not add tool adapters in MVP.
+- Do not invent source paths.
+- Do not write `Run tests`, `Check manually`, `Follow best practices`, `TBD`, or similar generic content as validation evidence.

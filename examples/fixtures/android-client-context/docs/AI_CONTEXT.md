@@ -1,31 +1,60 @@
+---
+ai_summary:
+  purpose: "Concise context map for the Android fixture."
+  read_when:
+    - "Before changing fixture docs or Android profile examples."
+  source_of_truth:
+    - "AGENTS.md"
+    - "settings.gradle.kts"
+    - "app/build.gradle.kts"
+  verify_with:
+    - "python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android"
+  stale_when:
+    - "Fixture modules, build variants, test tasks, or authority docs change."
+---
+
 # AI Context
 
-> Android 客户端示例仓库的 AI 上下文索引，用于快速选择权威文档和验证入口。
+## Project Snapshot
 
-## 权威文档地图
+- Android fixture for validating an agent-agnostic context pack.
+- Uses Gradle Kotlin DSL with `:app`, `:core:network`, and `:feature:login`.
+- Demonstrates Android MVP docs for build, modules, tests, manifests, and permissions.
 
-- [文档导航](README.md): 示例仓库的阅读顺序、权威边界和验证入口。
-- [架构概览](ARCHITECTURE.md): Android 模块边界、数据流和高风险变更点。
+## Core Directories
 
-## 任务读取路径
+- `app/`: Android application entrypoint.
+- `core/network/`: networking primitives.
+- `feature/login/`: login feature UI and flow.
+- `docs/`: generated context pack authority docs.
 
-- 修改 Compose 页面：先读 `AGENTS.md`，再读 `docs/ARCHITECTURE.md`，最后核对目标页面和 ViewModel。
-- 修改网络接口：先读 `docs/ARCHITECTURE.md`，再核对 Retrofit 或 OkHttp 调用点。
-- 修改本地数据：先读 `docs/ARCHITECTURE.md`，再核对 Room migration 或 DataStore key。
+## Documentation Map
 
-## 关键证据入口
+- `docs/README.md`: generated docs index.
+- `docs/BUILD_MATRIX.md`: Gradle modules, build types, flavors, variants, and build commands.
+- `docs/MODULE_MAP.md`: module responsibilities and dependency boundaries.
+- `docs/TESTING_MATRIX.md`: test source sets and Gradle test commands.
+- `docs/MANIFEST_AND_PERMISSIONS.md`: manifest paths, exported components, intent filters, and permissions.
 
-- `settings.gradle.kts`
-- `app/build.gradle.kts`
-- `app/src/main/AndroidManifest.xml`
-- `./gradlew testDebugUnitTest`
+## Common Task Reading Paths
 
-## 高风险误读点
+- Build or flavor changes: read `docs/BUILD_MATRIX.md`, then inspect `settings.gradle.kts` and `app/build.gradle.kts`.
+- Module dependency changes: read `docs/MODULE_MAP.md`, then inspect each module `build.gradle.kts`.
+- Test changes: read `docs/TESTING_MATRIX.md`, then inspect `app/src/test/` or `app/src/androidTest/`.
+- Manifest or permission changes: read `docs/MANIFEST_AND_PERMISSIONS.md`, then inspect `app/src/main/AndroidManifest.xml`.
 
-- 不要把 debug 构建变体行为当成 release 行为。
-- 不要绕过 ViewModel 在 Compose UI 中直接发起网络请求。
-- 修改权限后必须核对 Manifest 和运行时权限处理。
+## High-Risk Areas
 
-## Optional
+- Do not invent Gradle tasks that are not documented in authority docs.
+- Do not change module dependencies without updating `docs/MODULE_MAP.md`.
+- Do not add permissions without updating `docs/MANIFEST_AND_PERMISSIONS.md`.
 
-- `docs/archive/README.md`
+## Validation Commands
+
+```bash
+python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android
+```
+
+## Stale when
+
+- Gradle modules, variants, test tasks, manifest entries, or Android profile docs change.
