@@ -57,6 +57,7 @@ Do not rewrite a simplified validator in the target project. The target validato
 - concrete `verify_with` commands
 - placeholder and generic-content rejection, including English and Chinese generic phrases
 - local Markdown link checks
+- validator-aware `## Legacy detail docs` handling in `docs/README.md`
 
 If the target repository already has a validator, compare it against the canonical behavior and upgrade it in place. After writing it, run:
 

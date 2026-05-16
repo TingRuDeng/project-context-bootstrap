@@ -197,9 +197,37 @@ class ValidateDocsTest(unittest.TestCase):
 
         self.assertTrue(has_issue(issues, "章节 ## How to verify 内容过于空泛"))
 
+    def test_legacy_detail_docs_are_skipped_when_indexed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_core_context(root)
+            append_file(
+                root / "docs" / "README.md",
+                "\n## Legacy detail docs\n\n- [Architecture](ARCHITECTURE.md)\n",
+            )
+            write_file(root / "docs" / "ARCHITECTURE.md", "# Architecture\n")
+
+            issues = validate_docs.validate_root(root)
+
+            self.assertEqual([], issues)
+
+    def test_unindexed_legacy_doc_is_still_validated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_core_context(root)
+            write_file(root / "docs" / "ARCHITECTURE.md", "# Architecture\n")
+
+            issues = validate_docs.validate_root(root)
+
+            self.assertTrue(has_issue(issues, "ARCHITECTURE.md: 缺少必备标题"))
+
 def write_file(path, content):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
+
+def append_file(path, content):
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(content)
 
 def write_core_context(root):
     write_file(root / "AGENTS.md", "# AGENTS.md\n")

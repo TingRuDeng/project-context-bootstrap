@@ -103,7 +103,7 @@ When no context pack exists, it creates `AGENTS.md`, `docs/README.md`, and `docs
 
 When older context docs already exist, it upgrades them in place: it keeps accurate project-specific content, adds missing `ai_summary` metadata, fills concrete `source_of_truth` and `verify_with` evidence, aligns required sections, and removes obsolete generated docs only after useful content has been preserved elsewhere.
 
-When non-generated legacy docs are indexed as detail docs, the workflow either adds lightweight freshness metadata to those docs or clearly labels them in `docs/README.md` as legacy detail docs with freshness limits.
+When non-generated legacy docs are indexed as detail docs, the workflow either adds lightweight freshness metadata to those docs or clearly labels them under `## Legacy detail docs` in `docs/README.md` with freshness limits. The canonical validator treats that section as an explicit legacy boundary instead of forcing those detail docs into the authority-doc contract.
 
 ## Tool adapters
 

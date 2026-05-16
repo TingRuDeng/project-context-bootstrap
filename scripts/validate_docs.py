@@ -15,10 +15,7 @@ LINK_PATTERN = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 REQUIRED_AUTHORITY_HEADINGS = ("## Purpose", "## Source of truth", "## Key facts", "## How to verify", "## Stale when")
 LEGACY_AUTHORITY_HEADINGS = ("## Purpose", "## Source Of Truth", "## Key Facts", "## How To Verify", "## Stale When")
 REQUIRED_AI_KEYS = ("purpose", "read_when", "source_of_truth", "verify_with", "stale_when")
-AI_CONTEXT_SECTIONS = (
-    "## Project Snapshot", "## Core Directories", "## Documentation Map",
-    "## Common Task Reading Paths", "## High-Risk Areas", "## Validation Commands", "## Stale when",
-)
+AI_CONTEXT_SECTIONS = ("## Project Snapshot", "## Core Directories", "## Documentation Map", "## Common Task Reading Paths", "## High-Risk Areas", "## Validation Commands", "## Stale when")
 GENERIC_SECTION_VALUES = {
     "tbd", "todo", "n/a", "coming soon", "run tests", "check manually",
     "follow best practices", "use proper architecture",
@@ -28,6 +25,7 @@ GENERIC_SECTION_VALUES = {
 }
 COMMAND_PREFIXES = ("./", "python", "python3", "gradle", "./gradlew", "npm", "pnpm", "yarn", "make", "git")
 SKIPPED_DOC_PARTS = ("docs/archive/", "docs/AGENT_STARTER_PROMPT.md", "docs/DOC_SYNC_CHECKLIST.md")
+LEGACY_DOC_SECTION = "## Legacy detail docs"
 
 def validate_root(root, profile=DEFAULT_PROFILE):
     base = Path(root).resolve()
@@ -36,7 +34,7 @@ def validate_root(root, profile=DEFAULT_PROFILE):
         return issues
 
     issues.extend(validate_profile_files(base, profile))
-    issues.extend(validate_authority_docs(base))
+    issues.extend(validate_authority_docs(base, legacy_detail_docs(base)))
     issues.extend(validate_ai_context(base))
     issues.extend(validate_links(base))
     return issues
@@ -58,15 +56,13 @@ def validate_profile_files(base, profile):
     return issues
 
 def required_files_for(profile):
-    if profile == "android":
-        return GENERIC_REQUIRED_FILES + ANDROID_REQUIRED_FILES
-    return GENERIC_REQUIRED_FILES
+    return GENERIC_REQUIRED_FILES + (ANDROID_REQUIRED_FILES if profile == "android" else ())
 
-def validate_authority_docs(base):
+def validate_authority_docs(base, legacy_docs=()):
     issues = []
     for path in sorted((base / "docs").glob("*.md")):
         rel = relative_path(path, base)
-        if should_skip_authority_doc(rel):
+        if should_skip_authority_doc(rel, legacy_docs):
             continue
         text = read_text(path)
         issues.extend(validate_file_text(path, base, text))
@@ -165,7 +161,7 @@ def validate_ai_context(base):
     issues = validate_file_text(path, base, text)
     issues.extend(validate_ai_summary(rel, text, base))
     issues.extend(validate_ai_context_sections(rel, text))
-    if count_lines(text) > MAX_AI_CONTEXT_LINES:
+    if len(text.splitlines()) > MAX_AI_CONTEXT_LINES:
         issues.append(f"{rel}: 超过 {MAX_AI_CONTEXT_LINES} 行上下文预算")
     return issues
 
@@ -249,8 +245,23 @@ def validate_links_in_file(path, base, text):
             issues.append(f"{rel}: 本地链接不存在 {target}")
     return issues
 
-def should_skip_authority_doc(rel):
-    return rel in SKIPPED_DOC_PARTS or rel.startswith("docs/archive/")
+def should_skip_authority_doc(rel, legacy_docs=()):
+    return rel in SKIPPED_DOC_PARTS or rel.startswith("docs/archive/") or rel in legacy_docs
+
+def legacy_detail_docs(base):
+    readme = base / "docs/README.md"
+    if not readme.exists():
+        return set()
+    section = section_content(read_text(readme), LEGACY_DOC_SECTION)
+    targets = LINK_PATTERN.findall(section)
+    return {rel for target in targets if (rel := normalize_doc_target(target)).startswith("docs/")}
+
+def normalize_doc_target(target):
+    target = target.split("#", 1)[0]
+    for prefix in ("../", "./"):
+        if target.startswith(prefix):
+            target = target[len(prefix):]
+    return target if target.startswith("docs/") else f"docs/{target}"
 
 def is_external_or_anchor(target):
     return target.startswith("#") or "://" in target or target.startswith("mailto:")
@@ -260,9 +271,6 @@ def read_text(path):
 
 def relative_path(path, base):
     return path.resolve().relative_to(base).as_posix()
-
-def count_lines(text):
-    return len(text.splitlines())
 
 def main(argv=None):
     args = sys.argv[1:] if argv is None else argv
