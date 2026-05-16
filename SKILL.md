@@ -78,6 +78,15 @@ Keep file names, code identifiers, commands, package names, Gradle task names, a
 
 For upgrade mode, preserve the existing documentation language unless the user asks to change it. If a repository already mixes languages, keep each document internally consistent and prefer the language used by its nearest existing source document.
 
+## Path Portability
+
+Generated context docs must be portable across machines and agents.
+
+- Use repository-relative paths such as `frontend/.env.development` or `backend/app.db`.
+- Do not write machine-local absolute paths such as `/Users/...`, `/Volumes/...`, `/home/...`, or `C:\...`.
+- If a local tool example needs an absolute path, show a repository-relative placeholder and state that the user should resolve it locally outside the committed context pack.
+- Keep URLs and API routes as written; this rule is only for local filesystem paths.
+
 ## Android MVP Output
 
 If the target repository is an Android project, also generate:
@@ -140,6 +149,12 @@ Separate verification commands by cost and side effect whenever a document lists
 
 Do not present `device-required` or `release-side-effect` commands as ordinary quick validation. Keep command strings exact and add prerequisite notes when needed.
 
+For repositories with multiple active implementations, runtimes, packages, apps, or backends, validation coverage must include each active implementation or explicitly state why one is out of scope. Examples:
+
+- Frontend plus two alternative backends: include frontend checks and both backend checks.
+- Monorepo packages: include package-specific commands for each touched or documented package.
+- Android app plus shared library modules: include app and library validation when both are part of the context pack.
+
 ## Workflow
 
 Follow this sequence:
@@ -154,7 +169,7 @@ Follow this sequence:
 8. Generate or upgrade `docs/AI_CONTEXT.md`.
 9. If the target is Android, generate or upgrade the four Android authority docs.
 10. Install or upgrade the canonical `scripts/validate_docs.py`.
-11. Fill every authority doc with real `source_of_truth` paths and concrete tiered `verify_with` commands.
+11. Fill every authority doc with portable `source_of_truth` paths and concrete tiered `verify_with` commands.
 12. Run `scripts/validate_docs.py` with the matching profile.
 13. Fix validation errors before reporting completion.
 14. Report changed files, execution mode, documentation language, validation commands, validation results, and remaining risks.

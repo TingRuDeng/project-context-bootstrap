@@ -10,6 +10,7 @@ ANDROID_REQUIRED_FILES = ("docs/BUILD_MATRIX.md", "docs/MODULE_MAP.md", "docs/TE
 MAX_FILE_BYTES = 1_000_000
 MAX_AI_CONTEXT_LINES = 120
 PLACEHOLDER_PATTERN = re.compile(r"\b(TBD|TODO|placeholder|fill in|later)\b|待补|待补充|后续补充")
+MACHINE_PATH_PATTERN = re.compile(r"(/Users/|/Volumes/|/home/|[A-Za-z]:\\)")
 LINK_PATTERN = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 
 REQUIRED_AUTHORITY_HEADINGS = ("## Purpose", "## Source of truth", "## Key facts", "## How to verify", "## Stale when")
@@ -17,11 +18,9 @@ LEGACY_AUTHORITY_HEADINGS = ("## Purpose", "## Source Of Truth", "## Key Facts",
 REQUIRED_AI_KEYS = ("purpose", "read_when", "source_of_truth", "verify_with", "stale_when")
 AI_CONTEXT_SECTIONS = ("## Project Snapshot", "## Core Directories", "## Documentation Map", "## Common Task Reading Paths", "## High-Risk Areas", "## Validation Commands", "## Stale when")
 GENERIC_SECTION_VALUES = {
-    "tbd", "todo", "n/a", "coming soon", "run tests", "check manually",
-    "follow best practices", "use proper architecture",
-    "use clean architecture", "run appropriate tests", "follow conventions",
-    "检查一下", "手动确认", "运行测试", "按需验证", "遵循最佳实践",
-    "后续补充", "待补充", "人工检查", "执行测试", "使用合适的验证",
+    "tbd", "todo", "n/a", "coming soon", "run tests", "check manually", "follow best practices", "use proper architecture",
+    "use clean architecture", "run appropriate tests", "follow conventions", "检查一下", "手动确认", "运行测试", "按需验证",
+    "遵循最佳实践", "后续补充", "待补充", "人工检查", "执行测试", "使用合适的验证",
 }
 COMMAND_PREFIXES = ("./", "python", "python3", "gradle", "./gradlew", "npm", "pnpm", "yarn", "make", "git")
 SKIPPED_DOC_PARTS = ("docs/archive/", "docs/AGENT_STARTER_PROMPT.md", "docs/DOC_SYNC_CHECKLIST.md")
@@ -75,6 +74,8 @@ def validate_file_text(path, base, text):
     issues = []
     if PLACEHOLDER_PATTERN.search(text):
         issues.append(f"{rel}: 存在占位词或未完成标记")
+    if MACHINE_PATH_PATTERN.search(text):
+        issues.append(f"{rel}: 包含不可移植的本机绝对路径")
     if path.stat().st_size > MAX_FILE_BYTES:
         issues.append(f"{rel}: 文件超过 {MAX_FILE_BYTES} 字节")
     return issues

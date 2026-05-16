@@ -64,6 +64,8 @@ Release-side-effect:
 
 List only if the command creates, signs, publishes, uploads, or synchronizes artifacts.
 
+If the repository has multiple active implementations, packages, apps, or backends, list validation for each active implementation or explain why one is out of scope.
+
 ## Task routing
 
 Explain which docs to read for common tasks.

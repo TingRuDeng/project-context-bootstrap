@@ -44,6 +44,8 @@ List exact commands by tier:
 - Device-required: emulator, device, external service, or credentials needed.
 - Release-side-effect: creates, signs, publishes, uploads, or synchronizes artifacts.
 
+For multiple active implementations, runtimes, packages, apps, or backends, include a command for each one or state why it is out of scope.
+
 ## Stale when
 
 List the repository changes that require regenerating or updating this context map.

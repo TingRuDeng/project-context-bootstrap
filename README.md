@@ -80,6 +80,8 @@ The validator checks required files, required headings, complete `ai_summary`, e
 
 Generic-content detection covers common English and Chinese placeholders such as `Run tests`, `Check manually`, `Follow best practices`, `运行测试`, `手动确认`, and `遵循最佳实践`.
 
+The validator also rejects machine-local filesystem paths such as `/Users/...`, `/Volumes/...`, `/home/...`, and `C:\...`; generated context packs should use repository-relative paths.
+
 ## Recommended workflow
 
 1. Run the context bootstrap workflow against a target repository.
@@ -90,10 +92,11 @@ Generic-content detection covers common English and Chinese placeholders such as
 6. If the target is Android, generate or upgrade the Android profile docs.
 7. Install or upgrade the canonical `scripts/validate_docs.py`.
 8. Split verification commands into quick, full, device-required, and release-side-effect groups when cost or side effects differ.
-9. Run `validate_docs.py`.
-10. Fix missing paths, weak commands, placeholders, and generic sections.
-11. Commit the context pack.
-12. Ask future AI coding agents to start from `AGENTS.md` and `docs/AI_CONTEXT.md`.
+9. For multi-implementation repositories, include validation commands for each active implementation or state why one is out of scope.
+10. Run `validate_docs.py`.
+11. Fix missing paths, weak commands, placeholders, and generic sections.
+12. Commit the context pack.
+13. Ask future AI coding agents to start from `AGENTS.md` and `docs/AI_CONTEXT.md`.
 
 ## Existing documentation
 

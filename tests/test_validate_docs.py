@@ -197,6 +197,16 @@ class ValidateDocsTest(unittest.TestCase):
 
         self.assertTrue(has_issue(issues, "章节 ## How to verify 内容过于空泛"))
 
+    def test_machine_absolute_path_is_reported(self):
+        content = VALID_FRONTMATTER_DOC.replace(
+            "`src/example.py`",
+            "`/Users/example/project/src/example.py`",
+        )
+
+        issues = validate_single_doc(content)
+
+        self.assertTrue(has_issue(issues, "包含不可移植的本机绝对路径"))
+
     def test_legacy_detail_docs_are_skipped_when_indexed(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
