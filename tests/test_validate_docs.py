@@ -8,13 +8,13 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import validate_docs
 
-from tests.fixtures import VALID_AI_CONTEXT, VALID_DOC, VALID_FRONTMATTER_DOC
+from tests.fixtures import VALID_AGENTS_DOC, VALID_AI_CONTEXT, VALID_DOC, VALID_FRONTMATTER_DOC
 
 class ValidateDocsTest(unittest.TestCase):
     def test_valid_context_system_passes(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            write_file(root / "AGENTS.md", "# AGENTS.md\n")
+            write_file(root / "AGENTS.md", VALID_AGENTS_DOC)
             write_file(root / "docs" / "README.md", VALID_DOC)
             write_file(root / "docs" / "AI_CONTEXT.md", VALID_AI_CONTEXT)
             write_file(root / "docs" / "archive" / "README.md", "# 归档\n")
@@ -27,7 +27,7 @@ class ValidateDocsTest(unittest.TestCase):
     def test_frontmatter_authority_doc_passes(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            write_file(root / "AGENTS.md", "# AGENTS.md\n")
+            write_file(root / "AGENTS.md", VALID_AGENTS_DOC)
             write_file(root / "docs" / "README.md", VALID_FRONTMATTER_DOC)
             write_file(root / "docs" / "AI_CONTEXT.md", VALID_AI_CONTEXT)
             write_file(root / "docs" / "archive" / "README.md", "# 归档\n")
@@ -231,6 +231,23 @@ class ValidateDocsTest(unittest.TestCase):
 
             self.assertTrue(has_issue(issues, "ARCHITECTURE.md: 缺少必备标题"))
 
+    def test_agents_contract_is_validated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_core_context(root)
+            write_file(root / "AGENTS.md", "# AGENTS.md\n")
+
+            issues = validate_docs.validate_root(root)
+
+            self.assertTrue(has_issue(issues, "AGENTS.md: 缺少必备标题"))
+
+    def test_duplicate_ai_summary_is_reported(self):
+        content = VALID_FRONTMATTER_DOC + "\n```yaml\nai_summary:\n  purpose: duplicate\n```\n"
+
+        issues = validate_single_doc(content)
+
+        self.assertTrue(has_issue(issues, "包含多个 ai_summary 摘要块"))
+
 def write_file(path, content):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
@@ -240,7 +257,7 @@ def append_file(path, content):
         handle.write(content)
 
 def write_core_context(root):
-    write_file(root / "AGENTS.md", "# AGENTS.md\n")
+    write_file(root / "AGENTS.md", VALID_AGENTS_DOC)
     write_file(root / "docs" / "README.md", VALID_FRONTMATTER_DOC)
     write_file(root / "docs" / "AI_CONTEXT.md", VALID_AI_CONTEXT)
     write_file(root / "docs" / "archive" / "README.md", "# 归档\n")
@@ -259,7 +276,7 @@ def write_android_context(root):
 def validate_single_doc(content):
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
-        write_file(root / "AGENTS.md", "# AGENTS.md\n")
+        write_file(root / "AGENTS.md", VALID_AGENTS_DOC)
         write_file(root / "docs" / "README.md", content)
         write_file(root / "docs" / "AI_CONTEXT.md", VALID_AI_CONTEXT)
         write_file(root / "docs" / "archive" / "README.md", "# 归档\n")

@@ -37,9 +37,9 @@ In upgrade mode:
 3. Convert existing docs to the current authority doc contract.
 4. Add missing `ai_summary` fields, source-of-truth paths, verification commands, stale conditions, and required sections.
 5. Replace placeholder, generic, or unverifiable claims with evidence from the repository.
-6. Remove or consolidate obsolete generated docs only when their useful content has been moved into the current context pack.
+6. Remove or consolidate obsolete generated docs and old fenced `ai_summary` blocks only when their useful content has been moved into the current context pack.
 7. Keep manual product, design, architecture, and operations docs intact unless they directly conflict with the context pack.
-8. If legacy detail docs are indexed from `docs/README.md`, either add lightweight `ai_summary` frontmatter to those docs or label them as legacy detail docs with freshness limits in the index.
+8. If legacy detail docs are indexed from `docs/README.md`, either add lightweight `ai_summary` frontmatter to those docs or label them as legacy detail docs with freshness limits in the index. Do not also describe the same files as current authority docs unless they have been migrated to the authority doc contract.
 9. Report whether the run created a new context pack or upgraded an existing one.
 
 Do not overwrite useful existing documentation just because a template exists. Templates define the target shape; the target repository defines the facts.
@@ -51,11 +51,13 @@ When writing or upgrading a target repository, install or update `scripts/valida
 Do not rewrite a simplified validator in the target project. The target validator must preserve these checks:
 
 - required files for `generic` and `android` profiles
+- `AGENTS.md` authority contract validation
 - required authority doc headings
 - complete and non-empty `ai_summary`
 - existing local `source_of_truth` paths
 - concrete `verify_with` commands
 - placeholder and generic-content rejection, including English and Chinese generic phrases
+- duplicate `ai_summary:` block rejection
 - local Markdown link checks
 - validator-aware `## Legacy detail docs` handling in `docs/README.md`
 
@@ -181,6 +183,7 @@ Follow this sequence:
 - Keep `docs/AI_CONTEXT.md` concise.
 - Prefer concrete paths, commands, module names, and stale conditions.
 - Do not duplicate long content across files.
+- Do not keep both old fenced metadata and new frontmatter metadata in the same file.
 - If docs and code disagree, trust the code and repair the docs.
 
 ## Android MVP Rules

@@ -1,6 +1,23 @@
+---
+ai_summary:
+  purpose: "Android fixture agent entrypoint."
+  read_when:
+    - "Before modifying the Android fixture."
+    - "When choosing fixture authority docs or validation commands."
+  source_of_truth:
+    - "docs/README.md"
+    - "docs/AI_CONTEXT.md"
+    - "settings.gradle.kts"
+    - "app/build.gradle.kts"
+  verify_with:
+    - "python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android"
+  stale_when:
+    - "Fixture modules, build variants, test tasks, or Android authority docs change."
+---
+
 # AGENTS.md
 
-## Project purpose
+## Purpose
 
 This fixture demonstrates an Android MVP context pack for AI coding agents.
 
@@ -25,7 +42,13 @@ For Android-specific work, also read:
 - `app/src/main/AndroidManifest.xml` defines exported components and permissions.
 - `app/src/test/` and `app/src/androidTest/` define test source sets.
 
-## Validation commands
+## Key facts
+
+- This fixture has one Android app module named `app`.
+- The Android MVP docs cover build variants, module boundaries, test commands, manifest entries, exported components, and permissions.
+- Generated docs must use repository-relative source paths.
+
+## How to verify
 
 Quick:
 
@@ -52,6 +75,10 @@ Device-required:
 - Module boundary changes: read `docs/MODULE_MAP.md`.
 - Test changes: read `docs/TESTING_MATRIX.md`.
 - Manifest, permissions, or exported components: read `docs/MANIFEST_AND_PERMISSIONS.md`.
+
+## Stale when
+
+- Gradle modules, build variants, dependencies, test tasks, manifest entries, exported components, or permissions change.
 
 ## Do not
 

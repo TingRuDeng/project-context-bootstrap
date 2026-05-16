@@ -1,6 +1,25 @@
+---
+ai_summary:
+  purpose: "Define agent-facing rules for project-context-bootstrap."
+  read_when:
+    - "Before changing the context-pack workflow, templates, validator, tests, or fixtures."
+    - "When deciding which files and validation commands are authoritative."
+  source_of_truth:
+    - "README.md"
+    - "SKILL.md"
+    - "templates/AI_CONTEXT.md"
+    - "scripts/validate_docs.py"
+    - "tests/test_validate_docs.py"
+  verify_with:
+    - "python3 -m unittest tests/test_validate_docs.py"
+    - "python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android"
+  stale_when:
+    - "The workflow, generated document shape, validator behavior, test contract, or Android fixture changes."
+---
+
 # AGENTS.md
 
-## Project purpose
+## Purpose
 
 This repository maintains `project-context-bootstrap`, a tool and documentation system for generating agent-friendly context packs for software projects.
 
@@ -29,7 +48,14 @@ For Android context examples, read:
 - `tests/test_validate_docs.py` defines expected validator behavior.
 - `examples/fixtures/android-client-context/` defines the Android MVP fixture.
 
-## Validation commands
+## Key facts
+
+- The project is agent-agnostic; generated docs must not target one AI coding agent as the center of the design.
+- `AGENTS.md` is part of the authority doc contract and must stay concise.
+- `docs/AI_CONTEXT.md` is a concise context map, not a full architecture document.
+- `scripts/validate_docs.py` is the canonical validator that target repositories should install or upgrade.
+
+## How to verify
 
 Run these before finishing changes:
 
@@ -56,6 +82,10 @@ Android MVP support focuses on:
 - Manifests, exported components, and permissions.
 
 Do not add advanced Android docs in MVP unless explicitly requested.
+
+## Stale when
+
+- The workflow, generated document shape, validator behavior, test contract, or Android fixture changes.
 
 ## Do not
 

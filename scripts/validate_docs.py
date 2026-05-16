@@ -6,6 +6,7 @@ from pathlib import Path
 AI_CONTEXT_PATH = Path("docs/AI_CONTEXT.md")
 DEFAULT_PROFILE = "generic"
 GENERIC_REQUIRED_FILES = ("AGENTS.md", "docs/README.md", "docs/AI_CONTEXT.md")
+ROOT_AUTHORITY_FILES = ("AGENTS.md",)
 ANDROID_REQUIRED_FILES = ("docs/BUILD_MATRIX.md", "docs/MODULE_MAP.md", "docs/TESTING_MATRIX.md", "docs/MANIFEST_AND_PERMISSIONS.md")
 MAX_FILE_BYTES = 1_000_000
 MAX_AI_CONTEXT_LINES = 120
@@ -41,9 +42,7 @@ def validate_root(root, profile=DEFAULT_PROFILE):
 def validate_base(base):
     if not base.exists():
         return [f"{base}: 路径不存在"]
-    if not base.is_dir():
-        return [f"{base}: 必须是目录"]
-    return []
+    return [] if base.is_dir() else [f"{base}: 必须是目录"]
 
 def validate_profile_files(base, profile):
     issues = []
@@ -59,7 +58,11 @@ def required_files_for(profile):
 
 def validate_authority_docs(base, legacy_docs=()):
     issues = []
-    for path in sorted((base / "docs").glob("*.md")):
+    paths = [base / rel for rel in ROOT_AUTHORITY_FILES]
+    paths.extend(sorted((base / "docs").glob("*.md")))
+    for path in paths:
+        if not path.exists():
+            continue
         rel = relative_path(path, base)
         if should_skip_authority_doc(rel, legacy_docs):
             continue
@@ -74,6 +77,8 @@ def validate_file_text(path, base, text):
     issues = []
     if PLACEHOLDER_PATTERN.search(text):
         issues.append(f"{rel}: 存在占位词或未完成标记")
+    if text.count("ai_summary:") > 1:
+        issues.append(f"{rel}: 包含多个 ai_summary 摘要块")
     if MACHINE_PATH_PATTERN.search(text):
         issues.append(f"{rel}: 包含不可移植的本机绝对路径")
     if path.stat().st_size > MAX_FILE_BYTES:
@@ -112,9 +117,7 @@ def validate_ai_summary(rel, text, base):
 
 def validate_summary_key(rel, key, summary):
     value = summary.get(key)
-    if isinstance(value, list) and value:
-        return []
-    if isinstance(value, str) and value.strip():
+    if (isinstance(value, list) and value) or (isinstance(value, str) and value.strip()):
         return []
     if key == "purpose":
         return [f"{rel}: ai_summary.purpose 不能为空"]
@@ -156,7 +159,6 @@ def validate_ai_context(base):
     path = base / AI_CONTEXT_PATH
     if not path.exists():
         return []
-
     text = read_text(path)
     rel = AI_CONTEXT_PATH.as_posix()
     issues = validate_file_text(path, base, text)
@@ -195,15 +197,11 @@ def validate_verify_commands(rel, summary):
     return issues
 
 def should_check_path(entry):
-    if entry.startswith(("http://", "https://")):
-        return False
-    return "/" in entry or "." in Path(entry).name
+    return not entry.startswith(("http://", "https://")) and ("/" in entry or "." in Path(entry).name)
 
 def is_specific_command(command):
     lowered = command.strip().lower()
-    if lowered in GENERIC_SECTION_VALUES:
-        return False
-    return lowered.startswith(COMMAND_PREFIXES)
+    return lowered not in GENERIC_SECTION_VALUES and lowered.startswith(COMMAND_PREFIXES)
 
 def validate_generic_sections(rel, text, headings):
     issues = []

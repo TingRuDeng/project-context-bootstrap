@@ -1,6 +1,21 @@
+---
+ai_summary:
+  purpose: "Portable agent entrypoint for this repository."
+  read_when:
+    - "Before making repository changes."
+    - "When deciding which docs and validation commands to use."
+  source_of_truth:
+    - "docs/README.md"
+    - "docs/AI_CONTEXT.md"
+  verify_with:
+    - "python3 scripts/validate_docs.py . --profile generic"
+  stale_when:
+    - "Project rules, source-of-truth files, or validation commands change."
+---
+
 # AGENTS.md
 
-## Project purpose
+## Purpose
 
 Describe what this repository does in one or two concrete paragraphs.
 
@@ -34,7 +49,17 @@ Examples:
   - `app/src/test/`
   - `app/src/androidTest/`
 
-## Validation commands
+## Key facts
+
+List the stable facts an AI coding agent must preserve.
+
+Examples:
+
+- This repository uses repository-relative paths in generated context docs.
+- `docs/AI_CONTEXT.md` is a concise map, not a full architecture document.
+- Legacy detail docs must be marked clearly when they are not authority docs.
+
+## How to verify
 
 List exact commands grouped by cost and side effect.
 
@@ -65,6 +90,15 @@ Release-side-effect:
 List only if the command creates, signs, publishes, uploads, or synchronizes artifacts.
 
 If the repository has multiple active implementations, packages, apps, or backends, list validation for each active implementation or explain why one is out of scope.
+
+## Stale when
+
+List concrete changes that make this entrypoint stale.
+
+Examples:
+
+- Project rules, source-of-truth files, or validation commands change.
+- Authority docs are added, renamed, archived, or split.
 
 ## Task routing
 

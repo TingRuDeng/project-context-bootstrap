@@ -76,11 +76,13 @@ Validate the Android fixture with:
 python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android
 ```
 
-The validator checks required files, required headings, complete `ai_summary`, existing `source_of_truth` paths, concrete `verify_with` commands, placeholders, and generic sections.
+The validator checks required files, required headings, complete `ai_summary`, existing `source_of_truth` paths, concrete `verify_with` commands, placeholders, and generic sections. It validates `AGENTS.md` as an authority doc, not only as a required file.
 
 Generic-content detection covers common English and Chinese placeholders such as `Run tests`, `Check manually`, `Follow best practices`, `运行测试`, `手动确认`, and `遵循最佳实践`.
 
 The validator also rejects machine-local filesystem paths such as `/Users/...`, `/Volumes/...`, `/home/...`, and `C:\...`; generated context packs should use repository-relative paths.
+
+The validator rejects multiple `ai_summary:` blocks in the same authority doc. Upgrade mode should migrate old fenced summaries into frontmatter instead of keeping both old and new metadata.
 
 ## Recommended workflow
 
@@ -106,7 +108,7 @@ When no context pack exists, it creates `AGENTS.md`, `docs/README.md`, and `docs
 
 When older context docs already exist, it upgrades them in place: it keeps accurate project-specific content, adds missing `ai_summary` metadata, fills concrete `source_of_truth` and `verify_with` evidence, aligns required sections, and removes obsolete generated docs only after useful content has been preserved elsewhere.
 
-When non-generated legacy docs are indexed as detail docs, the workflow either adds lightweight freshness metadata to those docs or clearly labels them under `## Legacy detail docs` in `docs/README.md` with freshness limits. The canonical validator treats that section as an explicit legacy boundary instead of forcing those detail docs into the authority-doc contract.
+When non-generated legacy docs are indexed as detail docs, the workflow either adds lightweight freshness metadata to those docs or clearly labels them under `## Legacy detail docs` in `docs/README.md` with freshness limits. The canonical validator treats that section as an explicit legacy boundary instead of forcing those detail docs into the authority-doc contract. A legacy detail doc should not also be described as a current authority doc until it has been migrated to the authority contract.
 
 ## Tool adapters
 

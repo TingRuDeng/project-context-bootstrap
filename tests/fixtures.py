@@ -122,3 +122,43 @@ python3 -m unittest tests/test_validate_docs.py
 
 - 示例结构变化。
 """
+
+VALID_AGENTS_DOC = """---
+ai_summary:
+  purpose: "示例 agent 入口"
+  read_when:
+    - "开始修改示例仓库前"
+  source_of_truth:
+    - "docs/README.md"
+    - "docs/AI_CONTEXT.md"
+  verify_with:
+    - "python3 -m unittest tests/test_validate_docs.py"
+  stale_when:
+    - "示例仓库执行规则变化"
+---
+
+# AGENTS.md
+
+## Purpose
+
+定义示例仓库的 agent 入口。
+
+## Source of truth
+
+- `docs/README.md`
+- `docs/AI_CONTEXT.md`
+
+## Key facts
+
+- 示例仓库使用统一上下文包。
+
+## How to verify
+
+```bash
+python3 -m unittest tests/test_validate_docs.py
+```
+
+## Stale when
+
+- 示例仓库执行规则变化。
+"""

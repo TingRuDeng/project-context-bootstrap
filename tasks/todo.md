@@ -14,6 +14,18 @@
 - [x] Validate verification commands.
 - [x] Reject placeholder and generic content.
 
+## Cross-repo feedback
+
+- [x] Validate `AGENTS.md` as an authority doc, not only as a required file.
+- [x] Reject duplicate `ai_summary:` blocks so upgrade mode cannot keep old fenced metadata beside new frontmatter.
+- [x] Document that legacy detail docs must not also be described as current authority docs until migrated.
+- [x] Update the Android fixture and AGENTS template to use the authority doc contract.
+- [x] Add regression tests for `AGENTS.md` contract validation and duplicate summaries.
+
+## Review notes
+
+The ForgeFlow upgrade review exposed two reusable rules: root `AGENTS.md` needs the same authority contract checks as docs, and upgrade mode must remove old metadata once frontmatter exists. These are now enforced by the canonical validator and covered by tests.
+
 ## Later
 
 - [ ] Add optional `CLAUDE.md` adapter.
