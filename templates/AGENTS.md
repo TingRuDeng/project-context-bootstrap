@@ -2,16 +2,16 @@
 
 ## Project purpose
 
-This fixture demonstrates an Android MVP context pack for AI coding agents.
+Describe what this repository does in one or two concrete paragraphs.
 
 ## Before making changes
 
-Read:
+Read these files first:
 
 - `docs/README.md`
 - `docs/AI_CONTEXT.md`
 
-For Android-specific work, also read:
+If this is an Android project, also read:
 
 - `docs/BUILD_MATRIX.md`
 - `docs/MODULE_MAP.md`
@@ -20,20 +20,36 @@ For Android-specific work, also read:
 
 ## Source of truth
 
-- `settings.gradle.kts` defines included Gradle modules.
-- `app/build.gradle.kts` defines app build types, flavors, and dependencies.
-- `app/src/main/AndroidManifest.xml` defines exported components and permissions.
-- `app/src/test/` and `app/src/androidTest/` define test source sets.
+List the files and directories that define project behavior.
+
+Examples:
+
+- Build configuration:
+  - `settings.gradle.kts`
+  - `build.gradle.kts`
+  - `app/build.gradle.kts`
+- Application source:
+  - `app/src/main/`
+- Tests:
+  - `app/src/test/`
+  - `app/src/androidTest/`
 
 ## Validation commands
 
+List exact commands.
+
+Examples:
+
 ```bash
-./gradlew :app:assembleDemoDebug
-./gradlew :app:testDemoDebugUnitTest
-python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android
+./gradlew :app:assembleDebug
+./gradlew :app:testDebugUnitTest
 ```
 
 ## Task routing
+
+Explain which docs to read for common tasks.
+
+Examples:
 
 - Build or Gradle changes: read `docs/BUILD_MATRIX.md`.
 - Module boundary changes: read `docs/MODULE_MAP.md`.
@@ -41,6 +57,10 @@ python3 scripts/validate_docs.py examples/fixtures/android-client-context --prof
 - Manifest, permissions, or exported components: read `docs/MANIFEST_AND_PERMISSIONS.md`.
 
 ## Do not
+
+List project-specific restrictions.
+
+Examples:
 
 - Do not invent Gradle tasks.
 - Do not change module dependencies without updating `docs/MODULE_MAP.md`.

@@ -1,177 +1,127 @@
 # project-context-bootstrap
 
-这是一个可复用的 Codex/Agent 技能，用于把陌生代码仓库整理成对人类维护者和 AI 代理都友好的项目上下文系统。
+## What this project does
 
-它的目标不是“多生成几份文档”，而是建立一组少而准、可扫读、可抽取、可验证的权威入口，让后续进入仓库的人和代理都能快速知道：
+`project-context-bootstrap` generates an agent-friendly context pack for software repositories.
 
-- 先读什么。
-- 哪些文档是权威来源。
-- 常见任务从哪些代码入口开始。
-- 哪些契约、历史坑和执行权限不能被误改。
-- 完成任务前如何证明代码、文档和验证结果一致。
+It is designed for human maintainers and AI coding agents. It is agent-agnostic: Codex, Claude Code, GitHub Copilot, Cursor, Gemini CLI, OpenHands, Aider, and future AI coding agents are consumers, not the center of the design.
 
-## 适用场景
+The generated context pack helps AI coding agents understand project structure, build commands, test commands, source-of-truth files, high-risk areas, validation evidence, and stale conditions.
 
-适合在这些情况下使用：
+## What this project generates
 
-- 仓库缺少面向人类和 AI 代理的启动文档。
-- 人类 onboarding 慢，因为文档入口分散、难扫读或过度提示词化。
-- AI 代理经常误读架构、接口契约、权限、命名转换或测试入口。
-- 仓库有重复规则、旧文档、失效链接、泛教程或不可信的历史说明。
-- 团队希望建立可复用的 AI 辅助开发上下文规范。
+For every software repository, the core output is:
 
-不适合在这些情况下使用：
+- `AGENTS.md`
+- `docs/README.md`
+- `docs/AI_CONTEXT.md`
 
-- 只修一个局部 bug 或实现一个普通业务功能。
-- 仓库已有可信、活跃维护且经过审计的人机双友好上下文系统。
-- 当前任务不涉及仓库上下文设计。
+For Android projects, the Android MVP profile adds:
 
-## 生成什么
+- `docs/BUILD_MATRIX.md`
+- `docs/MODULE_MAP.md`
+- `docs/TESTING_MATRIX.md`
+- `docs/MANIFEST_AND_PERMISSIONS.md`
 
-该技能会根据仓库实际情况生成或更新以下文件。如果已有等价文件，会优先整合，而不是重复制造入口。
+## Core context pack
 
-| 文件 | 作用 |
-| --- | --- |
-| `AGENTS.md` / `CLAUDE.md` / 等价主规则文件 | 记录执行规则、权限边界、分支、提交、推送、合并和验收证据 |
-| `docs/README.md` | 文档导航入口，告诉人类和代理按任务类型如何阅读 |
-| `docs/AI_CONTEXT.md` | 面向 AI 的短上下文索引，列出权威文档、任务路由和证据入口 |
-| `templates/AI_CONTEXT.md` | 本技能自带的 AI 上下文索引模板 |
-| `docs/ARCHITECTURE.md` | 系统形态、模块边界、数据流和中间件行为 |
-| `docs/API_ENDPOINTS.md` | 接口契约、认证、分页、错误和响应约定 |
-| `docs/DATABASE_SCHEMA.md` | 核心模型、迁移约束、索引、状态和软删除规则 |
-| `docs/KNOWN_PITFALLS.md` | 有证据支撑的坑点、局部例外和代理常犯错误 |
-| `docs/TECH_DEBT.md` | 已确认的技术债、影响范围和迁移限制 |
-| `docs/AGENT_STARTER_PROMPT.md` | 可复制到新会话的极短启动提示 |
-| `docs/DOC_SYNC_CHECKLIST.md` | 文档同步验收清单 |
-| `docs/ADR/0001-*.md` | 影响开发行为的首个架构决策记录 |
-| 模块级 `README.md` | 高风险模块的局部入口、契约扩散点和验证命令 |
-| `docs/archive/README.md` | 说明归档文档仅作历史参考，不再是权威来源 |
-| `scripts/validate_docs.py` | 校验示例或生成文档是否满足基础契约 |
-| `examples/fixtures/` | 保存可验证的生成结果样例 |
+`AGENTS.md` is the portable agent instruction entrypoint.
 
-## 为什么对人和 AI 都友好
+`docs/README.md` is the generated docs index.
 
-生成文档会遵守同一套人机双友好契约：
+`docs/AI_CONTEXT.md` is the concise context map for AI coding agents.
 
-- 人类可读：每份权威文档都有目的、适合读者、一分钟摘要、权威边界和验证方式。
-- AI 可抽取：每份权威文档都有稳定键名的 `ai_summary` 摘要块，便于代理判断是否读取。
-- 可验证：描述代码现状时必须给出文件路径、函数、类、路由、模型、配置或命令证据。
-- 低重复：主规则、导航、AI 索引、稳定知识、局部模块指南和归档区职责分离。
-- 可维护：未完全验证的 API、模型或路由文档会明确标记为核心概览或已验证子集。
+All authority docs must include:
 
-## 两阶段工作流
+- `ai_summary.purpose`
+- `ai_summary.read_when`
+- `ai_summary.source_of_truth`
+- `ai_summary.verify_with`
+- `ai_summary.stale_when`
+- `## Purpose`
+- `## Source Of Truth`
+- `## Key Facts`
+- `## How To Verify`
+- `## Stale When`
 
-### 第一阶段：Build
+## Android MVP profile
 
-建立第一版可用上下文系统：
+The Android MVP profile covers:
 
-- 识别仓库语言、框架、入口、路由、配置、数据模型和现有文档。
-- 建立唯一主规则入口。
-- 建立唯一文档导航入口。
-- 建立或整合 `docs/AI_CONTEXT.md` 等 AI 上下文索引。
-- 建立必要的稳定知识文档、局部模块指南和归档边界。
+- Gradle modules and build variants
+- module responsibilities and dependencies
+- local and instrumented test commands
+- manifest paths, exported components, permissions, and intent filters
 
-第一阶段只代表“可用初稿”，不能视为完全可信。
+The Android MVP profile does not cover navigation, Room migrations, WorkManager, release operations, or performance docs.
 
-### 第二阶段：Audit & Repair
+## Validation
 
-用真实代码审计第一阶段产物：
-
-- 对照路由、schema、serializer、API client、模型、迁移、配置和中间件。
-- 降级未经完整验证却暗示完整覆盖的文档。
-- 区分多后端、多服务、多 API 面。
-- 删除或降级证据不足的坑点。
-- 修复失效链接、占位内容、陈旧客户端和错误归档状态。
-
-第二阶段完成后，文档系统才适合被后续人类和代理重复使用。
-
-## 安装
-
-使用技能仓库安装：
+Run validation commands against generated context packs:
 
 ```bash
-npx skills add TingRuDeng/project-context-bootstrap
+python3 scripts/validate_docs.py <context-root> --profile generic
+python3 scripts/validate_docs.py <context-root> --profile android
+python3 -m unittest tests/test_validate_docs.py
 ```
 
-或使用完整 GitHub 地址：
+Validate the Android fixture with:
+
+```bash
+python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android
+```
+
+The validator checks required files, required headings, complete `ai_summary`, existing `source_of_truth` paths, concrete `verify_with` commands, placeholders, and generic sections.
+
+## Recommended workflow
+
+1. Run the context bootstrap workflow against a target repository.
+2. Generate the core context pack.
+3. If the target is Android, generate the Android profile docs.
+4. Run `validate_docs.py`.
+5. Fix missing paths, weak commands, placeholders, and generic sections.
+6. Commit the context pack.
+7. Ask future AI coding agents to start from `AGENTS.md` and `docs/AI_CONTEXT.md`.
+
+## Tool adapters
+
+Tool-specific files such as `CLAUDE.md`, Copilot instructions, Cursor rules, `GEMINI.md`, and `llms.txt` are future optional adapters.
+
+They should point to the canonical core context pack instead of duplicating it.
+
+MVP does not generate tool adapters.
+
+## MVP limitations
+
+- No tool-specific adapters.
+- No real Gradle introspection.
+- No real manifest merge parsing.
+- No Room migration parsing.
+- No behavioral evals.
+
+## Install
+
+Install with:
 
 ```bash
 npx skills add https://github.com/TingRuDeng/project-context-bootstrap
 ```
 
-如果你的环境支持直接放置技能目录，也可以把 `SKILL.md` 放入全局 skills 路径下的 `project-context-bootstrap/` 目录。
+Update a global installation with:
 
-## 使用示例
-
-### 从零建立上下文系统
-
-```text
-请使用 project-context-bootstrap 技能处理当前仓库。
-
-目标：
-建立一套对人类维护者和 AI 代理都友好的项目上下文系统，让后续进入仓库的人和代理都能快速知道读什么、信什么、怎么验证、哪些边界不能乱改。
-
-要求：
-1. 检查仓库语言、框架、入口、路由、配置、数据模型和现有文档。
-2. 创建或更新唯一主规则入口。
-3. 创建或更新 `docs/README.md` 作为唯一导航入口。
-4. 创建或整合 `docs/AI_CONTEXT.md` 或等价 AI 上下文索引。
-5. 创建或更新经代码证据支撑的稳定知识文档。
-6. 只为高价值或高风险模块添加局部 `README.md`。
-7. 将过期、重复、泛化或被替代的文档移入 `docs/archive/`。
-8. 确保每份权威文档都有目的、适合读者、一分钟摘要、AI 摘要块、权威边界和验证证据。
-
-约束：
-- 代码是事实来源。
-- 不编造架构事实。
-- 不重复规则来源。
-- 不把 AI 友好写成只有机器看得懂。
-- 不让文档暗示未经验证的完整覆盖。
+```bash
+npx skills update project-context-bootstrap -g -y
 ```
 
-### 审计并修复已有上下文系统
+## Reference practices
 
-```text
-请使用 project-context-bootstrap 技能审计并修复当前仓库已有的人机双友好文档系统。
-
-目标：
-不重建一切，只识别漂移、重复、陈旧、死链接、证据不足和误导性完整声明，并修复到单一权威结构。
-```
-
-### 只归档旧文档
-
-```text
-请使用 project-context-bootstrap 技能，但本次只处理旧文档归档。
-
-目标：
-识别旧 onboarding、泛教程、编号历史文档和被替代的说明文件，将它们移入 `docs/archive/`，同时保留仍然有价值的事实。
-```
-
-## 典型结果
-
-使用得当后，仓库应该具备：
-
-- 一个主规则入口。
-- 一个主导航入口。
-- 一个 AI 上下文索引或等价入口。
-- 明确的分支、提交、推送、合并和交付证据规则。
-- 人类能快速扫读的权威文档。
-- AI 能稳定抽取的摘要块、任务路由和证据入口。
-- 只在高价值模块存在的局部指南。
-- 已归档或明确降级的历史文档。
-- 没有指向失效文件、删除技能或不存在路径的活跃引用。
-
-## 参考实践
-
-本项目的优化方向参考了以下公开实践，并做了取舍：
-
-| 项目 | 采纳点 | 未采纳点 |
+| Project | Adopted | Not adopted in MVP |
 | --- | --- | --- |
-| [AGENTS.md](https://github.com/agentsmd/agents.md) | 固定主规则入口，强调开发、测试和 PR 指令 | 不把所有项目知识塞进一个规则文件 |
-| [llms.txt](https://llmstxt.org/) | 固定 Markdown 顺序、短摘要、Optional 区域 | 不要求网站根路径，也不替代仓库规则文件 |
-| [Repomix](https://github.com/yamadashy/repomix) | 上下文预算、排除规则、敏感信息意识 | 不把整个仓库打包成单文件作为默认产物 |
-| [Gitingest](https://github.com/coderamp-labs/gitingest) | prompt-friendly 摘要思路和代码库入口意识 | 不生成完整代码 digest，优先生成权威导航 |
+| [AGENTS.md](https://github.com/agentsmd/agents.md) | Stable agent instruction entrypoint | Tool-specific behavior |
+| [llms.txt](https://llmstxt.org/) | Concise Markdown context map ideas | `llms.txt` adapter |
+| [Repomix](https://github.com/yamadashy/repomix) | Context budget and evidence mindset | Repository packing |
+| [Gitingest](https://github.com/coderamp-labs/gitingest) | Prompt-friendly context shape | Full source digest |
 
-## 许可证
+## License
 
 MIT

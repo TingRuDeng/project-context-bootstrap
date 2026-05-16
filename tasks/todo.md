@@ -1,62 +1,32 @@
-# 任务清单：优化人机双友好的文档生成规范
+# TODO
 
-## 轻量 Spec
+## MVP
 
-### 目标
+- [x] Add agent-agnostic root `AGENTS.md`.
+- [x] Add `tasks/mvp-scope.md`.
+- [x] Add missing templates for the core context pack.
+- [x] Add Android MVP templates.
+- [x] Update Android fixture.
+- [x] Add `--profile generic` and `--profile android` validation modes.
+- [x] Validate required files for each profile.
+- [x] Validate `ai_summary`.
+- [x] Validate source-of-truth paths.
+- [x] Validate verification commands.
+- [x] Reject placeholder and generic content.
 
-优化 `project-context-bootstrap` 技能，让它生成的仓库上下文文档同时适合人类维护者快速扫读，也适合 AI 代理稳定抽取权威信息、执行边界和验证证据。
+## Later
 
-### 边界
-
-- 只修改本项目已有说明与技能规范，不引入运行时代码。
-- 以 `SKILL.md` 作为技能行为的权威来源，`README.md` 作为安装和使用入口。
-- 不把所有知识压进单个文件，继续保持规则、导航、事实、归档和模块指南的职责分离。
-- 不为 AI 友好牺牲人类可读性；新增结构必须能被人直接理解。
-
-### 参考取舍
-
-- 借鉴 `AGENTS.md` 的固定规则入口思想：让代理知道哪里读规则、如何测试、如何交付。
-- 借鉴 `llms.txt` 的轻量索引思想：给 AI 一个短、稳定、可解析的上下文入口。
-- 借鉴 Repomix / Gitingest 的代码库摘要思想：强调目录、边界、统计、验证来源和敏感信息过滤。
-
-### 验收标准
-
-- `SKILL.md` 明确规定权威文档的双受众结构、机器可抽取结构和证据锚点。
-- `SKILL.md` 增加 AI 上下文索引或等价产物的生成规则，并明确何时生成、如何避免重复。
-- `README.md` 能让人快速理解“该技能会生成哪些文档、为什么对人和 AI 都友好、如何使用”。
-- 文档修改完成后执行链接/关键术语检查，确认没有断裂引用和明显占位符。
-
-## 执行项
-
-- [x] 更新 `SKILL.md` 的目标产物与质量基线。
-- [x] 增加人类可读结构、AI 可抽取结构、证据锚点和上下文预算规则。
-- [x] 增加 `docs/AI_CONTEXT.md` 或等价 AI 上下文索引的生成与审计规则。
-- [x] 同步更新 `README.md` 的项目说明、产物清单和使用模板。
-- [x] 执行最小充分验证。
-
-## Review 小结
-
-- 已将技能规范整体改为简体中文，符合本仓库用户可见文档语言约束。
-- `SKILL.md` 明确新增人机双友好文档契约、AI 摘要块、证据锚点、上下文预算和 AI 上下文索引规则。
-- `README.md` 同步补充产物清单、两阶段工作流、使用模板和 GitHub 参考实践。
-- 本次为纯文档与技能规范变更，未引入运行时代码；验证以静态检查、行数约束、BOM 检查、关键术语检查和 diff 空白检查为主。
-
-## Review 跟进：验证闭环与模板化
-
-### 目标
-
-落实审查发现中的三个问题：缺少可执行验证闭环、`AI_CONTEXT` 缺少固定模板、参考实践缺少采纳说明。
-
-### 执行项
-
-- [x] 新增 `scripts/validate_docs.py`，校验 `ai_summary`、权威文档标题、`AI_CONTEXT` 章节顺序、占位词和本地链接。
-- [x] 新增 `tests/test_validate_docs.py`，覆盖有效示例、缺失摘要块、`AI_CONTEXT` 缺失章节。
-- [x] 新增 `templates/AI_CONTEXT.md`，提供固定章节顺序和 Optional 区域。
-- [x] 新增 `examples/fixtures/android-client-context/`，作为 Android 客户端上下文示例。
-- [x] 更新 `SKILL.md`，把模板和校验脚本纳入生成与完成检查。
-- [x] 更新 `README.md`，说明 AGENTS.md、llms.txt、Repomix、Gitingest 的采纳与未采纳点。
-
-### Review 小结
-
-- 这次从“规范描述”推进到“模板 + 示例 + 自动校验”。
-- Android 示例只覆盖上下文文档形态，不代表完整 Android 项目。
+- [ ] Add optional `CLAUDE.md` adapter.
+- [ ] Add optional Copilot instructions adapter.
+- [ ] Add optional Cursor rules adapter.
+- [ ] Add optional `GEMINI.md` adapter.
+- [ ] Add optional `llms.txt` output.
+- [ ] Add ADR templates.
+- [ ] Add runbook templates.
+- [ ] Add troubleshooting templates.
+- [ ] Add Android navigation/deep-link docs.
+- [ ] Add Android storage/migration docs.
+- [ ] Add Android background-work docs.
+- [ ] Add Android release docs.
+- [ ] Add Android performance docs.
+- [ ] Add behavioral evals.
