@@ -11,7 +11,7 @@ ANDROID_REQUIRED_FILES = ("docs/BUILD_MATRIX.md", "docs/MODULE_MAP.md", "docs/TE
 MAX_FILE_BYTES = 1_000_000
 MAX_AI_CONTEXT_LINES = 120
 PLACEHOLDER_PATTERN = re.compile(r"\b(TBD|TODO|placeholder|fill in|later)\b|待补|待补充|后续补充")
-MACHINE_PATH_PATTERN = re.compile(r"(/Users/|/Volumes/|/home/|[A-Za-z]:\\)")
+MACHINE_PATH_PATTERN = re.compile(r"(?<![\w.-])(/Users/|/Volumes/|/home/|[A-Za-z]:\\)")
 LINK_PATTERN = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 
 REQUIRED_AUTHORITY_HEADINGS = ("## Purpose", "## Source of truth", "## Key facts", "## How to verify", "## Stale when")
@@ -25,6 +25,7 @@ GENERIC_SECTION_VALUES = {
 }
 COMMAND_PREFIXES = ("./", "python", "python3", "gradle", "./gradlew", "npm", "pnpm", "yarn", "make", "git")
 SKIPPED_DOC_PARTS = ("docs/archive/", "docs/AGENT_STARTER_PROMPT.md", "docs/DOC_SYNC_CHECKLIST.md")
+SKIPPED_LINK_DIRS = {".git", ".idea", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".venv", "__pycache__", "coverage", "dist", "node_modules"}
 LEGACY_DOC_SECTION = "## Legacy detail docs"
 
 def validate_root(root, profile=DEFAULT_PROFILE):
@@ -227,7 +228,7 @@ def is_generic_section(content):
 def validate_links(base):
     issues = []
     for path in sorted(base.rglob("*.md")):
-        if ".git" in path.parts:
+        if SKIPPED_LINK_DIRS.intersection(path.parts):
             continue
         text = read_text(path)
         issues.extend(validate_links_in_file(path, base, text))

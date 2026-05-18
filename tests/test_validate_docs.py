@@ -207,6 +207,16 @@ class ValidateDocsTest(unittest.TestCase):
 
         self.assertTrue(has_issue(issues, "包含不可移植的本机绝对路径"))
 
+    def test_api_home_route_is_not_reported_as_machine_path(self):
+        content = VALID_FRONTMATTER_DOC.replace(
+            "The example has a concrete source file.",
+            "The API route `/oauth/home/` is a valid project route.",
+        )
+
+        issues = validate_single_doc(content)
+
+        self.assertFalse(has_issue(issues, "包含不可移植的本机绝对路径"))
+
     def test_legacy_detail_docs_are_skipped_when_indexed(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -247,6 +257,16 @@ class ValidateDocsTest(unittest.TestCase):
         issues = validate_single_doc(content)
 
         self.assertTrue(has_issue(issues, "包含多个 ai_summary 摘要块"))
+
+    def test_dependency_markdown_links_are_skipped(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_core_context(root)
+            write_file(root / "node_modules" / "pkg" / "README.md", "[bad](missing.md)\n")
+
+            issues = validate_docs.validate_root(root)
+
+            self.assertEqual([], issues)
 
 def write_file(path, content):
     path.parent.mkdir(parents=True, exist_ok=True)
