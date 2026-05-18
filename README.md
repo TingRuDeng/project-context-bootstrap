@@ -84,6 +84,8 @@ The validator also rejects machine-local filesystem paths such as `/Users/...`, 
 
 The validator rejects multiple `ai_summary:` blocks in the same authority doc. Upgrade mode should migrate old fenced summaries into frontmatter instead of keeping both old and new metadata.
 
+The validator also keeps `AGENTS.md` within a routing-file budget. Long protocols and detailed task playbooks should live in `docs/README.md`, dedicated authority docs, or module README files.
+
 ## Recommended workflow
 
 1. Run the context bootstrap workflow against a target repository.
@@ -95,10 +97,11 @@ The validator rejects multiple `ai_summary:` blocks in the same authority doc. U
 7. Install or upgrade the canonical `scripts/validate_docs.py`.
 8. Split verification commands into quick, full, device-required, and release-side-effect groups when cost or side effects differ.
 9. For multi-implementation repositories, include validation commands for each active implementation or state why one is out of scope.
-10. Run `validate_docs.py`.
-11. Fix missing paths, weak commands, placeholders, and generic sections.
-12. Commit the context pack.
-13. Ask future AI coding agents to start from `AGENTS.md` and `docs/AI_CONTEXT.md`.
+10. For coordination directories with nested git repositories, use `git -C <repo>` validation commands instead of treating root-level git output as strong evidence.
+11. Run `validate_docs.py`.
+12. Fix missing paths, weak commands, placeholders, and generic sections.
+13. Commit the context pack.
+14. Ask future AI coding agents to start from `AGENTS.md` and `docs/AI_CONTEXT.md`.
 
 ## Existing documentation
 

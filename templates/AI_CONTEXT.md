@@ -19,6 +19,8 @@ ai_summary:
 
 Describe the repository purpose, primary language, framework, and runtime in three to five bullets.
 
+If the root is only a coordination directory with nested git repositories, state that clearly here.
+
 ## Core Directories
 
 List the source, test, configuration, and documentation directories that an AI coding agent should inspect first.
@@ -45,6 +47,8 @@ List exact commands by tier:
 - Release-side-effect: creates, signs, publishes, uploads, or synchronizes artifacts.
 
 For multiple active implementations, runtimes, packages, apps, or backends, include a command for each one or state why it is out of scope.
+
+For nested git repositories, include `git -C <repo>` checks for each active repository.
 
 ## Stale when
 

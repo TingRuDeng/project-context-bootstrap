@@ -10,10 +10,10 @@ ROOT_AUTHORITY_FILES = ("AGENTS.md",)
 ANDROID_REQUIRED_FILES = ("docs/BUILD_MATRIX.md", "docs/MODULE_MAP.md", "docs/TESTING_MATRIX.md", "docs/MANIFEST_AND_PERMISSIONS.md")
 MAX_FILE_BYTES = 1_000_000
 MAX_AI_CONTEXT_LINES = 120
+MAX_AGENTS_LINES = 350
 PLACEHOLDER_PATTERN = re.compile(r"\b(TBD|TODO|placeholder|fill in|later)\b|待补|待补充|后续补充")
 MACHINE_PATH_PATTERN = re.compile(r"(?<![\w.-])(/Users/|/Volumes/|/home/|[A-Za-z]:\\)")
 LINK_PATTERN = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
-
 REQUIRED_AUTHORITY_HEADINGS = ("## Purpose", "## Source of truth", "## Key facts", "## How to verify", "## Stale when")
 LEGACY_AUTHORITY_HEADINGS = ("## Purpose", "## Source Of Truth", "## Key Facts", "## How To Verify", "## Stale When")
 REQUIRED_AI_KEYS = ("purpose", "read_when", "source_of_truth", "verify_with", "stale_when")
@@ -27,7 +27,6 @@ COMMAND_PREFIXES = ("./", "python", "python3", "gradle", "./gradlew", "npm", "pn
 SKIPPED_DOC_PARTS = ("docs/archive/", "docs/AGENT_STARTER_PROMPT.md", "docs/DOC_SYNC_CHECKLIST.md")
 SKIPPED_LINK_DIRS = {".git", ".idea", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".venv", "__pycache__", "coverage", "dist", "node_modules"}
 LEGACY_DOC_SECTION = "## Legacy detail docs"
-
 def validate_root(root, profile=DEFAULT_PROFILE):
     base = Path(root).resolve()
     issues = validate_base(base)
@@ -82,6 +81,8 @@ def validate_file_text(path, base, text):
         issues.append(f"{rel}: 包含多个 ai_summary 摘要块")
     if MACHINE_PATH_PATTERN.search(text):
         issues.append(f"{rel}: 包含不可移植的本机绝对路径")
+    if rel == "AGENTS.md" and len(text.splitlines()) > MAX_AGENTS_LINES:
+        issues.append(f"{rel}: 超过 {MAX_AGENTS_LINES} 行路由文件预算")
     if path.stat().st_size > MAX_FILE_BYTES:
         issues.append(f"{rel}: 文件超过 {MAX_FILE_BYTES} 字节")
     return issues
@@ -170,8 +171,8 @@ def validate_ai_context(base):
     return issues
 
 def validate_ai_context_sections(rel, text):
-    positions = []
     issues = []
+    positions = []
     for section in AI_CONTEXT_SECTIONS:
         index = text.find(section)
         if index == -1:

@@ -58,6 +58,7 @@ Do not rewrite a simplified validator in the target project. The target validato
 - concrete `verify_with` commands
 - placeholder and generic-content rejection, including English and Chinese generic phrases
 - duplicate `ai_summary:` block rejection
+- `AGENTS.md` routing-file length budget
 - local Markdown link checks
 - validator-aware `## Legacy detail docs` handling in `docs/README.md`
 
@@ -88,6 +89,17 @@ Generated context docs must be portable across machines and agents.
 - Do not write machine-local absolute paths such as `/Users/...`, `/Volumes/...`, `/home/...`, or `C:\...`.
 - If a local tool example needs an absolute path, show a repository-relative placeholder and state that the user should resolve it locally outside the committed context pack.
 - Keep URLs and API routes as written; this rule is only for local filesystem paths.
+
+## Repository Shape
+
+Detect whether the target root is a single repository, a monorepo, or a coordination directory with nested repositories such as `backend/.git` and `frontend/.git`.
+
+For coordination directories:
+
+- State the repository shape in `AGENTS.md` and `docs/AI_CONTEXT.md`.
+- Treat nested repositories as separate git units for status, branch, commit, and diff checks.
+- Prefer commands such as `git -C backend diff --check` and `git -C frontend diff --check`.
+- Do not present root-level `git diff --check` as strong evidence when the root has no committed history or is only a wrapper.
 
 ## Android MVP Output
 
@@ -165,7 +177,7 @@ Follow this sequence:
 2. Detect whether this is a create run or an upgrade run.
 3. Choose the documentation language.
 4. Identify technology stack and profile.
-5. Locate source-of-truth files and directories.
+5. Locate source-of-truth files, directories, and git repository boundaries.
 6. Generate or upgrade `AGENTS.md`.
 7. Generate or upgrade `docs/README.md`.
 8. Generate or upgrade `docs/AI_CONTEXT.md`.
@@ -180,6 +192,7 @@ Follow this sequence:
 
 - Keep core docs agent-agnostic.
 - Keep `AGENTS.md` as a routing file, not a knowledge dump.
+- Move long protocols, detailed checklists, and high-risk task guides into `docs/README.md`, dedicated authority docs, or module README files.
 - Keep `docs/AI_CONTEXT.md` concise.
 - Prefer concrete paths, commands, module names, and stale conditions.
 - Do not duplicate long content across files.

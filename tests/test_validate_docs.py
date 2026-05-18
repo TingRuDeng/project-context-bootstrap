@@ -251,6 +251,18 @@ class ValidateDocsTest(unittest.TestCase):
 
             self.assertTrue(has_issue(issues, "AGENTS.md: 缺少必备标题"))
 
+    def test_agents_file_budget_is_reported(self):
+        long_agents = VALID_AGENTS_DOC + "\n".join("- 具体规则\n" for _ in range(360))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_core_context(root)
+            write_file(root / "AGENTS.md", long_agents)
+
+            issues = validate_docs.validate_root(root)
+
+            self.assertTrue(has_issue(issues, "AGENTS.md: 超过 350 行路由文件预算"))
+
     def test_duplicate_ai_summary_is_reported(self):
         content = VALID_FRONTMATTER_DOC + "\n```yaml\nai_summary:\n  purpose: duplicate\n```\n"
 

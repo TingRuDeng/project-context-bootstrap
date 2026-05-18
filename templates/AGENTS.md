@@ -56,6 +56,7 @@ List the stable facts an AI coding agent must preserve.
 Examples:
 
 - This repository uses repository-relative paths in generated context docs.
+- If this is a coordination directory, nested repositories use separate git commands such as `git -C backend status --short --branch`.
 - `docs/AI_CONTEXT.md` is a concise map, not a full architecture document.
 - Legacy detail docs must be marked clearly when they are not authority docs.
 
@@ -90,6 +91,8 @@ Release-side-effect:
 List only if the command creates, signs, publishes, uploads, or synchronizes artifacts.
 
 If the repository has multiple active implementations, packages, apps, or backends, list validation for each active implementation or explain why one is out of scope.
+
+If the repository root only coordinates nested git repositories, use `git -C <repo> diff --check` for each nested repository instead of relying on root-level `git diff --check`.
 
 ## Stale when
 
