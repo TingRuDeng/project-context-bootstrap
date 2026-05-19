@@ -23,12 +23,15 @@
 - [x] Add regression tests for `AGENTS.md` contract validation and duplicate summaries.
 - [x] Add an `AGENTS.md` routing-file length budget to prevent knowledge-dump entrypoints.
 - [x] Document nested git repository handling for coordination-directory projects.
+- [x] Validate current completion-gate and checklist docs instead of skipping them by filename.
 
 ## Review notes
 
 The ForgeFlow upgrade review exposed two reusable rules: root `AGENTS.md` needs the same authority contract checks as docs, and upgrade mode must remove old metadata once frontmatter exists. These are now enforced by the canonical validator and covered by tests.
 
 The management-platform upgrade review exposed another reusable rule: coordination directories with nested `backend/.git` and `frontend/.git` need explicit repository-shape notes and `git -C <repo>` validation commands. It also showed that oversized `AGENTS.md` files should be blocked by the validator before they become knowledge dumps.
+
+The follow-up management-platform review exposed that docs described as current completion gates or required checklists must not be excluded from the authority contract by hard-coded filename. The validator now only treats explicit `## Legacy detail docs`, archive docs, and prompt templates as non-authority docs.
 
 ## Later
 

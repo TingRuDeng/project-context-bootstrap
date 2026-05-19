@@ -24,7 +24,7 @@ GENERIC_SECTION_VALUES = {
     "遵循最佳实践", "后续补充", "待补充", "人工检查", "执行测试", "使用合适的验证",
 }
 COMMAND_PREFIXES = ("./", "python", "python3", "gradle", "./gradlew", "npm", "pnpm", "yarn", "make", "git")
-SKIPPED_DOC_PARTS = ("docs/archive/", "docs/AGENT_STARTER_PROMPT.md", "docs/DOC_SYNC_CHECKLIST.md")
+SKIPPED_DOC_PARTS = ("docs/archive/", "docs/AGENT_STARTER_PROMPT.md")
 SKIPPED_LINK_DIRS = {".git", ".idea", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".venv", "__pycache__", "coverage", "dist", "node_modules"}
 LEGACY_DOC_SECTION = "## Legacy detail docs"
 def validate_root(root, profile=DEFAULT_PROFILE):

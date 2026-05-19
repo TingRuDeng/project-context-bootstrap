@@ -236,10 +236,12 @@ class ValidateDocsTest(unittest.TestCase):
             root = Path(tmp)
             write_core_context(root)
             write_file(root / "docs" / "ARCHITECTURE.md", "# Architecture\n")
+            write_file(root / "docs" / "DOC_SYNC_CHECKLIST.md", "# Completion Gate\n")
 
             issues = validate_docs.validate_root(root)
 
             self.assertTrue(has_issue(issues, "ARCHITECTURE.md: 缺少必备标题"))
+            self.assertTrue(has_issue(issues, "DOC_SYNC_CHECKLIST.md: 缺少必备标题"))
 
     def test_agents_contract_is_validated(self):
         with tempfile.TemporaryDirectory() as tmp:

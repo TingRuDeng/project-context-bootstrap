@@ -40,7 +40,8 @@ In upgrade mode:
 6. Remove or consolidate obsolete generated docs and old fenced `ai_summary` blocks only when their useful content has been moved into the current context pack.
 7. Keep manual product, design, architecture, and operations docs intact unless they directly conflict with the context pack.
 8. If legacy detail docs are indexed from `docs/README.md`, either add lightweight `ai_summary` frontmatter to those docs or label them as legacy detail docs with freshness limits in the index. Do not also describe the same files as current authority docs unless they have been migrated to the authority doc contract.
-9. Report whether the run created a new context pack or upgraded an existing one.
+9. If an existing doc is described as a current authority doc, rule source, completion gate, checklist, or required task entrypoint, migrate it to the authority doc contract instead of treating it as legacy detail.
+10. Report whether the run created a new context pack or upgraded an existing one.
 
 Do not overwrite useful existing documentation just because a template exists. Templates define the target shape; the target repository defines the facts.
 
@@ -61,6 +62,7 @@ Do not rewrite a simplified validator in the target project. The target validato
 - `AGENTS.md` routing-file length budget
 - local Markdown link checks
 - validator-aware `## Legacy detail docs` handling in `docs/README.md`
+- authority validation for current rule, checklist, completion-gate, and task-entrypoint docs unless they are explicitly listed under `## Legacy detail docs`
 
 If the target repository already has a validator, compare it against the canonical behavior and upgrade it in place. After writing it, run:
 
@@ -151,6 +153,8 @@ Every authority doc body must include:
 - `## Stale when`
 
 Do not accept placeholder, generic, or unverifiable content.
+
+Docs used as current rules, completion gates, review checklists, task routing, or required startup entrypoints are authority docs. Do not exclude them from validation by filename. Only `docs/archive/`, tool prompt templates, and docs explicitly indexed under `## Legacy detail docs` may bypass the authority contract.
 
 ## Verification Command Tiers
 
