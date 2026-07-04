@@ -19,6 +19,8 @@ For every software repository, the core output is:
 - `docs/AI_CONTEXT.md`
 - `scripts/validate_docs.py`
 
+The installable skill package lives under `skills/project-context-bootstrap/`.
+
 For Android projects, the Android MVP profile adds:
 
 - `docs/BUILD_MATRIX.md`
@@ -34,7 +36,7 @@ For Android projects, the Android MVP profile adds:
 
 `docs/AI_CONTEXT.md` is the concise context map for AI coding agents.
 
-`scripts/validate_docs.py` is the canonical validator. The workflow should copy or upgrade this validator in target repositories instead of generating a simplified local variant.
+`skills/project-context-bootstrap/scripts/validate_docs.py` is the repository canonical validator. The workflow should copy or upgrade it to `scripts/validate_docs.py` in target repositories instead of generating a simplified local variant.
 
 All authority docs must include:
 
@@ -65,21 +67,21 @@ The Android MVP profile does not cover navigation, Room migrations, WorkManager,
 Run validation commands against generated context packs:
 
 ```bash
-python3 scripts/validate_docs.py <context-root> --profile generic
-python3 scripts/validate_docs.py <context-root> --profile android
+python3 skills/project-context-bootstrap/scripts/validate_docs.py <context-root> --profile generic
+python3 skills/project-context-bootstrap/scripts/validate_docs.py <context-root> --profile android
 python3 -m unittest tests/test_validate_docs.py
 ```
 
 Validate the Android fixture with:
 
 ```bash
-python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android
+python3 skills/project-context-bootstrap/scripts/validate_docs.py skills/project-context-bootstrap/examples/fixtures/android-client-context --profile android
 ```
 
 Validate the coordination-directory fixture with:
 
 ```bash
-python3 scripts/validate_docs.py examples/fixtures/coordination-root --profile generic
+python3 skills/project-context-bootstrap/scripts/validate_docs.py skills/project-context-bootstrap/examples/fixtures/coordination-root --profile generic
 ```
 
 The validator checks required files, required headings, complete `ai_summary`, existing `source_of_truth` paths, concrete `verify_with` commands, placeholders, and generic sections. It validates `AGENTS.md` as an authority doc, not only as a required file.
@@ -106,7 +108,7 @@ For multi-command `How to verify` or `Validation Commands` sections, the validat
 4. In create mode, generate the core context pack from the repository evidence.
 5. In upgrade mode, preserve accurate existing facts and migrate old docs to the current contract.
 6. If the target is Android, generate or upgrade the Android profile docs.
-7. Install or upgrade the canonical `scripts/validate_docs.py`.
+7. Install or upgrade the canonical `skills/project-context-bootstrap/scripts/validate_docs.py` as target `scripts/validate_docs.py`.
 8. Split verification commands into quick, full, device-required, and release-side-effect groups when cost or side effects differ.
 9. For multi-implementation repositories, include validation commands for each active implementation or state why one is out of scope.
 10. For coordination directories with nested git repositories, use `git -C <repo>` validation commands instead of treating root-level git output as strong evidence.
@@ -148,13 +150,20 @@ MVP does not generate tool adapters.
 Install with:
 
 ```bash
-npx skills add https://github.com/TingRuDeng/project-context-bootstrap
+npx skills add https://github.com/TingRuDeng/project-context-bootstrap --skill project-context-bootstrap -g -a codex -y --copy
 ```
 
 Update a global installation with:
 
 ```bash
 npx skills update project-context-bootstrap -g -y
+```
+
+Verify the installed package contains bundled resources:
+
+```bash
+test -f ~/.codex/skills/project-context-bootstrap/scripts/validate_docs.py
+test -f ~/.codex/skills/project-context-bootstrap/templates/AI_CONTEXT.md
 ```
 
 ## Reference practices

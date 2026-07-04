@@ -4,7 +4,8 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "scripts"))
+SKILL_ROOT = ROOT / "skills" / "project-context-bootstrap"
+sys.path.insert(0, str(SKILL_ROOT / "scripts"))
 
 import validate_docs
 
@@ -125,7 +126,7 @@ class ValidateDocsTest(unittest.TestCase):
             self.assertTrue(has_issue(issues, "缺少必需文件 docs/MANIFEST_AND_PERMISSIONS.md"))
 
     def test_coordination_fixture_passes(self):
-        root = ROOT / "examples" / "fixtures" / "coordination-root"
+        root = SKILL_ROOT / "examples" / "fixtures" / "coordination-root"
 
         issues = validate_docs.validate_root(root, profile="generic")
 

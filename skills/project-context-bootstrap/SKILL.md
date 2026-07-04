@@ -23,6 +23,16 @@ Every target repository should receive the core context pack:
 `AGENTS.md` is the portable agent instruction entrypoint. `docs/AI_CONTEXT.md` is the concise context map.
 `scripts/validate_docs.py` is the canonical validation script for the generated context pack.
 
+## Bundled Resources
+
+A complete installation of this skill must include:
+
+- `scripts/validate_docs.py`
+- `templates/`
+- `examples/fixtures/`
+
+Resolve these paths relative to this `SKILL.md`. If the installed skill directory only contains `SKILL.md`, treat the installation as incomplete and reinstall the skill. Do not use a validator copied from another target project as the canonical source.
+
 ## Execution Mode
 
 Before writing files, inspect the target repository and choose one mode:

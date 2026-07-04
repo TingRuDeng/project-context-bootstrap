@@ -6,13 +6,13 @@ ai_summary:
     - "When deciding which files and validation commands are authoritative."
   source_of_truth:
     - "README.md"
-    - "SKILL.md"
-    - "templates/AI_CONTEXT.md"
-    - "scripts/validate_docs.py"
+    - "skills/project-context-bootstrap/SKILL.md"
+    - "skills/project-context-bootstrap/templates/AI_CONTEXT.md"
+    - "skills/project-context-bootstrap/scripts/validate_docs.py"
     - "tests/test_validate_docs.py"
   verify_with:
     - "python3 -m unittest tests/test_validate_docs.py"
-    - "python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android"
+    - "python3 skills/project-context-bootstrap/scripts/validate_docs.py skills/project-context-bootstrap/examples/fixtures/android-client-context --profile android"
   stale_when:
     - "The workflow, generated document shape, validator behavior, test contract, or Android fixture changes."
 ---
@@ -30,30 +30,30 @@ The project is agent-agnostic. Do not make core behavior specific to Codex, Clau
 Read:
 
 - `README.md`
-- `SKILL.md`
+- `skills/project-context-bootstrap/SKILL.md`
 - `tasks/mvp-scope.md`
-- `templates/AI_CONTEXT.md`
-- `scripts/validate_docs.py`
+- `skills/project-context-bootstrap/templates/AI_CONTEXT.md`
+- `skills/project-context-bootstrap/scripts/validate_docs.py`
 - `tests/test_validate_docs.py`
 
 For Android context examples, read:
 
-- `examples/fixtures/android-client-context/docs/AI_CONTEXT.md`
+- `skills/project-context-bootstrap/examples/fixtures/android-client-context/docs/AI_CONTEXT.md`
 
 ## Source of truth
 
-- `SKILL.md` defines the context-generation workflow.
-- `templates/` defines generated document shapes.
-- `scripts/validate_docs.py` defines validation behavior.
+- `skills/project-context-bootstrap/SKILL.md` defines the context-generation workflow.
+- `skills/project-context-bootstrap/templates/` defines generated document shapes.
+- `skills/project-context-bootstrap/scripts/validate_docs.py` defines validation behavior.
 - `tests/test_validate_docs.py` defines expected validator behavior.
-- `examples/fixtures/android-client-context/` defines the Android MVP fixture.
+- `skills/project-context-bootstrap/examples/fixtures/android-client-context/` defines the Android MVP fixture.
 
 ## Key facts
 
 - The project is agent-agnostic; generated docs must not target one AI coding agent as the center of the design.
 - `AGENTS.md` is part of the authority doc contract and must stay concise.
 - `docs/AI_CONTEXT.md` is a concise context map, not a full architecture document.
-- `scripts/validate_docs.py` is the canonical validator that target repositories should install or upgrade.
+- `skills/project-context-bootstrap/scripts/validate_docs.py` is the canonical validator that target repositories should install or upgrade.
 
 ## How to verify
 
@@ -61,7 +61,7 @@ Run these before finishing changes:
 
 ```bash
 python3 -m unittest tests/test_validate_docs.py
-python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android
+python3 skills/project-context-bootstrap/scripts/validate_docs.py skills/project-context-bootstrap/examples/fixtures/android-client-context --profile android
 ```
 
 ## Documentation Rules
