@@ -322,6 +322,17 @@ class ValidateDocsTest(unittest.TestCase):
 
             self.assertEqual([], issues)
 
+    def test_local_agent_tool_markdown_links_are_skipped(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_core_context(root)
+            write_file(root / ".agents" / "skills" / "demo" / "SKILL.md", "[bad](missing.md)\n")
+            write_file(root / ".codex" / "skills" / "demo" / "SKILL.md", "[bad](missing.md)\n")
+
+            issues = validate_docs.validate_root(root)
+
+            self.assertEqual([], issues)
+
 def write_file(path, content):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
