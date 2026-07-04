@@ -76,6 +76,12 @@ Validate the Android fixture with:
 python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android
 ```
 
+Validate the coordination-directory fixture with:
+
+```bash
+python3 scripts/validate_docs.py examples/fixtures/coordination-root --profile generic
+```
+
 The validator checks required files, required headings, complete `ai_summary`, existing `source_of_truth` paths, concrete `verify_with` commands, placeholders, and generic sections. It validates `AGENTS.md` as an authority doc, not only as a required file.
 
 Generic-content detection covers common English and Chinese placeholders such as `Run tests`, `Check manually`, `Follow best practices`, `运行测试`, `手动确认`, and `遵循最佳实践`.
@@ -87,6 +93,10 @@ The validator rejects multiple `ai_summary:` blocks in the same authority doc. U
 The validator also keeps `AGENTS.md` within a routing-file budget. Long protocols and detailed task playbooks should live in `docs/README.md`, dedicated authority docs, or module README files.
 
 Docs described as current rules, completion gates, review checklists, task routing, or required startup entrypoints are validated as authority docs. They should not be skipped by filename; only archived docs, tool prompt templates, and files explicitly listed under `## Legacy detail docs` are outside the authority-doc contract.
+
+For coordination directories with nested `*/.git` repositories, the validator requires core context docs to describe the coordination-directory shape and include matching `git -C <repo>` verification commands.
+
+For multi-command `How to verify` or `Validation Commands` sections, the validator requires verification tiers such as `quick`, `full`, `device-required`, or `release-side-effect`.
 
 ## Recommended workflow
 

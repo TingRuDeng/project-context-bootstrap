@@ -63,6 +63,9 @@ Do not rewrite a simplified validator in the target project. The target validato
 - local Markdown link checks
 - validator-aware `## Legacy detail docs` handling in `docs/README.md`
 - authority validation for current rule, checklist, completion-gate, and task-entrypoint docs unless they are explicitly listed under `## Legacy detail docs`
+- nested repository shape checks that require coordination-directory notes and `git -C <repo>` validation commands
+- verification-tier checks for multi-command `How to verify` or `Validation Commands` sections
+- inline-list parsing for `ai_summary` fields such as `source_of_truth: ["src/example.py"]`
 
 If the target repository already has a validator, compare it against the canonical behavior and upgrade it in place. After writing it, run:
 
@@ -102,6 +105,7 @@ For coordination directories:
 - Treat nested repositories as separate git units for status, branch, commit, and diff checks.
 - Prefer commands such as `git -C backend diff --check` and `git -C frontend diff --check`.
 - Do not present root-level `git diff --check` as strong evidence when the root has no committed history or is only a wrapper.
+- The validator reports nested `*/.git` directories when core context docs omit coordination-directory wording or matching `git -C <repo>` commands.
 
 ## Android MVP Output
 
@@ -240,6 +244,7 @@ For this repository, run:
 ```bash
 python3 -m unittest tests/test_validate_docs.py
 python3 scripts/validate_docs.py examples/fixtures/android-client-context --profile android
+python3 scripts/validate_docs.py examples/fixtures/coordination-root --profile generic
 ```
 
 ## Do Not

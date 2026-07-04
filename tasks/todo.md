@@ -24,6 +24,9 @@
 - [x] Add an `AGENTS.md` routing-file length budget to prevent knowledge-dump entrypoints.
 - [x] Document nested git repository handling for coordination-directory projects.
 - [x] Validate current completion-gate and checklist docs instead of skipping them by filename.
+- [x] Add a coordination-root fixture and validator regression tests for nested repositories.
+- [x] Validate multi-command verification sections require cost/side-effect tiers.
+- [x] Parse inline `ai_summary` lists before checking source paths and commands.
 
 ## Review notes
 
@@ -32,6 +35,8 @@ The ForgeFlow upgrade review exposed two reusable rules: root `AGENTS.md` needs 
 The management-platform upgrade review exposed another reusable rule: coordination directories with nested `backend/.git` and `frontend/.git` need explicit repository-shape notes and `git -C <repo>` validation commands. It also showed that oversized `AGENTS.md` files should be blocked by the validator before they become knowledge dumps.
 
 The follow-up management-platform review exposed that docs described as current completion gates or required checklists must not be excluded from the authority contract by hard-coded filename. The validator now only treats explicit `## Legacy detail docs`, archive docs, and prompt templates as non-authority docs.
+
+The next hardening pass added a coordination-root fixture plus checks for nested `*/.git` repositories, `git -C <repo>` commands, multi-command verification tiers, and inline `ai_summary` lists. This turns recurring real-project failures into executable regressions instead of prose-only guidance.
 
 ## Later
 
@@ -48,4 +53,4 @@ The follow-up management-platform review exposed that docs described as current 
 - [ ] Add Android background-work docs.
 - [ ] Add Android release docs.
 - [ ] Add Android performance docs.
-- [ ] Add behavioral evals.
+- [ ] Add more behavioral evals for legacy-doc-upgrade and full-stack Vue/Django repositories.

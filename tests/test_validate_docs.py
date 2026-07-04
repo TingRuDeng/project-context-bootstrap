@@ -124,6 +124,13 @@ class ValidateDocsTest(unittest.TestCase):
 
             self.assertTrue(has_issue(issues, "缺少必需文件 docs/MANIFEST_AND_PERMISSIONS.md"))
 
+    def test_coordination_fixture_passes(self):
+        root = ROOT / "examples" / "fixtures" / "coordination-root"
+
+        issues = validate_docs.validate_root(root, profile="generic")
+
+        self.assertEqual([], issues)
+
     def test_ai_summary_purpose_empty_is_reported(self):
         content = VALID_FRONTMATTER_DOC.replace('purpose: "示例文档"', 'purpose: ""')
 
@@ -271,6 +278,39 @@ class ValidateDocsTest(unittest.TestCase):
         issues = validate_single_doc(content)
 
         self.assertTrue(has_issue(issues, "包含多个 ai_summary 摘要块"))
+
+    def test_inline_ai_summary_lists_are_checked(self):
+        content = VALID_FRONTMATTER_DOC.replace(
+            '  source_of_truth:\n    - "src/example.py"',
+            '  source_of_truth: ["src/missing.py"]',
+        )
+
+        issues = validate_single_doc(content)
+
+        self.assertTrue(has_issue(issues, "source_of_truth 路径不存在 src/missing.py"))
+
+    def test_multi_command_verify_section_requires_tiers(self):
+        content = VALID_FRONTMATTER_DOC.replace(
+            "```bash\npython3 -m unittest tests/test_validate_docs.py\n```",
+            "```bash\npython3 -m unittest tests/test_validate_docs.py\npython3 scripts/validate_docs.py . --profile generic\n```",
+        )
+
+        issues = validate_single_doc(content)
+
+        self.assertTrue(has_issue(issues, "缺少验证命令分层"))
+
+    def test_nested_git_repositories_require_git_c_commands(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_core_context(root)
+            write_file(root / "backend" / ".git" / "HEAD", "ref: refs/heads/main\n")
+            write_file(root / "frontend" / ".git" / "HEAD", "ref: refs/heads/main\n")
+
+            issues = validate_docs.validate_root(root)
+
+            self.assertTrue(has_issue(issues, "coordination directory"))
+            self.assertTrue(has_issue(issues, "git -C backend"))
+            self.assertTrue(has_issue(issues, "git -C frontend"))
 
     def test_dependency_markdown_links_are_skipped(self):
         with tempfile.TemporaryDirectory() as tmp:
