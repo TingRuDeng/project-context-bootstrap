@@ -27,6 +27,9 @@
 - [x] Add a coordination-root fixture and validator regression tests for nested repositories.
 - [x] Validate multi-command verification sections require cost/side-effect tiers.
 - [x] Parse inline `ai_summary` lists before checking source paths and commands.
+- [x] Add a `network-read` verification tier for read-only registry, API, and web checks.
+- [x] Document context input boundaries inspired by repository packing tools.
+- [x] Document sensitive-data boundaries for generated context packs.
 
 ## Review notes
 
@@ -37,6 +40,8 @@ The management-platform upgrade review exposed another reusable rule: coordinati
 The follow-up management-platform review exposed that docs described as current completion gates or required checklists must not be excluded from the authority contract by hard-coded filename. The validator now only treats explicit `## Legacy detail docs`, archive docs, and prompt templates as non-authority docs.
 
 The next hardening pass added a coordination-root fixture plus checks for nested `*/.git` repositories, `git -C <repo>` commands, multi-command verification tiers, and inline `ai_summary` lists. This turns recurring real-project failures into executable regressions instead of prose-only guidance.
+
+The 2026-07-05 deep review compared AGENTS.md, llms.txt, Repomix, and Gitingest. The useful takeaways were a read-only external verification tier, clearer ignored-input boundaries, and explicit sensitive-data boundaries. The validator now accepts `network-read` and rejects `npm view` / `pnpm view` / `yarn info` under `release-side-effect`.
 
 ## Later
 

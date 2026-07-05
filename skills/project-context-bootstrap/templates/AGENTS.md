@@ -80,6 +80,10 @@ Full:
 ./gradlew :app:lintDebug
 ```
 
+Network-read:
+
+List read-only external registry, API, or documentation availability checks only when they are part of the project evidence.
+
 Device-required:
 
 ```bash

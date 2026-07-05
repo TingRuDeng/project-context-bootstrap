@@ -43,6 +43,7 @@ List exact commands by tier:
 
 - Quick: local, low-cost checks.
 - Full: broader local regression.
+- Network-read: read-only external registry, API, or documentation checks.
 - Device-required: emulator, device, external service, or credentials needed.
 - Release-side-effect: creates, signs, publishes, uploads, or synchronizes artifacts.
 

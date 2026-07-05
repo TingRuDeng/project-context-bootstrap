@@ -300,6 +300,27 @@ class ValidateDocsTest(unittest.TestCase):
 
         self.assertTrue(has_issue(issues, "缺少验证命令分层"))
 
+    def test_network_read_verify_tier_is_accepted(self):
+        content = VALID_FRONTMATTER_DOC.replace(
+            "```bash\npython3 -m unittest tests/test_validate_docs.py\n```",
+            "Quick:\n\n```bash\npython3 -m unittest tests/test_validate_docs.py\n```\n\n"
+            "Network-read:\n\n```bash\nnpm view example-package version --json\n```",
+        )
+
+        issues = validate_single_doc(content)
+
+        self.assertEqual([], issues)
+
+    def test_read_only_external_command_under_release_side_effect_is_reported(self):
+        content = VALID_FRONTMATTER_DOC.replace(
+            "```bash\npython3 -m unittest tests/test_validate_docs.py\n```",
+            "Release-side-effect:\n\n```bash\nnpm view example-package version --json\n```",
+        )
+
+        issues = validate_single_doc(content)
+
+        self.assertTrue(has_issue(issues, "只读外部命令应放入 network-read 分层"))
+
     def test_nested_git_repositories_require_git_c_commands(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -105,6 +105,25 @@ Generated context docs must be portable across machines and agents.
 - If a local tool example needs an absolute path, show a repository-relative placeholder and state that the user should resolve it locally outside the committed context pack.
 - Keep URLs and API routes as written; this rule is only for local filesystem paths.
 
+## Context Input Boundaries
+
+Generate context from tracked source, build files, tests, committed docs, examples, and public configuration schemas.
+
+Do not use dependency, cache, build-output, coverage, local-tool, or generated artifact directories as context evidence. Common examples include:
+
+- `.git/`, `.agents/`, `.codex/`, `.claude/`, `.cursor/`
+- `node_modules/`, `.venv/`, `venv/`, `.gradle/`, `build/`, `dist/`, `coverage/`
+
+Respect repository ignore intent such as `.gitignore`, `.ignore`, and project-specific generated-output notes when deciding what to inspect or link. If an ignored file is still the real source of truth, document the safer committed schema, sample, or command that proves the behavior.
+
+## Sensitive Data Boundary
+
+Never copy secrets, private tokens, personal credentials, private keys, local browser/session data, or private `.env` values into generated context docs.
+
+When environment behavior matters, cite `.env.example`, configuration schemas, deployment docs, or source files that read the variable. Use placeholder values such as `YOUR_TOKEN` only in examples.
+
+If existing docs contain apparent secrets, do not preserve them during upgrade mode. Stop, report the file path, and replace the value only after the user confirms the intended safe representation.
+
 ## Repository Shape
 
 Detect whether the target root is a single repository, a monorepo, or a coordination directory with nested repositories such as `backend/.git` and `frontend/.git`.
@@ -176,10 +195,13 @@ Separate verification commands by cost and side effect whenever a document lists
 
 - `quick`: local, low-cost checks suitable after small edits.
 - `full`: broader local regression checks.
+- `network-read`: read-only external checks such as package registry, API, or documentation availability queries.
 - `device-required`: commands that require an emulator, physical device, external service, or credentials.
 - `release-side-effect`: commands that create, sign, publish, upload, or synchronize artifacts.
 
-Do not present `device-required` or `release-side-effect` commands as ordinary quick validation. Keep command strings exact and add prerequisite notes when needed.
+Do not present `network-read`, `device-required`, or `release-side-effect` commands as ordinary quick validation. Keep command strings exact and add prerequisite notes when needed.
+
+Read-only registry checks such as `npm view ...`, `pnpm view ...`, and `yarn info ...` belong under `network-read`, not `release-side-effect`.
 
 For repositories with multiple active implementations, runtimes, packages, apps, or backends, validation coverage must include each active implementation or explicitly state why one is out of scope. Examples:
 

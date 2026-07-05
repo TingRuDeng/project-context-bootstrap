@@ -98,7 +98,9 @@ Docs described as current rules, completion gates, review checklists, task routi
 
 For coordination directories with nested `*/.git` repositories, the validator requires core context docs to describe the coordination-directory shape and include matching `git -C <repo>` verification commands.
 
-For multi-command `How to verify` or `Validation Commands` sections, the validator requires verification tiers such as `quick`, `full`, `device-required`, or `release-side-effect`.
+For multi-command `How to verify` or `Validation Commands` sections, the validator requires verification tiers such as `quick`, `full`, `network-read`, `device-required`, or `release-side-effect`.
+
+The validator also rejects read-only package registry checks such as `npm view ...` when they are placed under `release-side-effect`; those commands belong under `network-read`.
 
 ## Recommended workflow
 
@@ -109,7 +111,7 @@ For multi-command `How to verify` or `Validation Commands` sections, the validat
 5. In upgrade mode, preserve accurate existing facts and migrate old docs to the current contract.
 6. If the target is Android, generate or upgrade the Android profile docs.
 7. Install or upgrade the canonical `skills/project-context-bootstrap/scripts/validate_docs.py` as target `scripts/validate_docs.py`.
-8. Split verification commands into quick, full, device-required, and release-side-effect groups when cost or side effects differ.
+8. Split verification commands into quick, full, network-read, device-required, and release-side-effect groups when cost, external dependencies, or side effects differ.
 9. For multi-implementation repositories, include validation commands for each active implementation or state why one is out of scope.
 10. For coordination directories with nested git repositories, use `git -C <repo>` validation commands instead of treating root-level git output as strong evidence.
 11. Run `validate_docs.py`.
@@ -128,6 +130,14 @@ When older context docs already exist, it upgrades them in place: it keeps accur
 When non-generated legacy docs are indexed as detail docs, the workflow either adds lightweight freshness metadata to those docs or clearly labels them under `## Legacy detail docs` in `docs/README.md` with freshness limits. The canonical validator treats that section as an explicit legacy boundary instead of forcing those detail docs into the authority-doc contract. A legacy detail doc should not also be described as a current authority doc until it has been migrated to the authority contract.
 
 If a document is listed as a current rule source, completion gate, review checklist, or required task entrypoint, it is not a legacy detail doc and should include the authority contract.
+
+## Context input and safety boundaries
+
+Generated context should be based on tracked source, build files, tests, committed docs, examples, and public configuration schemas.
+
+The workflow should avoid treating dependency folders, build outputs, caches, local agent/tool state, coverage output, or generated artifacts as project evidence. Examples include `.git/`, `.agents/`, `.codex/`, `.claude/`, `.cursor/`, `node_modules/`, `.venv/`, `.gradle/`, `build/`, `dist/`, and `coverage/`.
+
+Generated docs must not copy secrets, private tokens, credentials, private keys, local session data, or private `.env` values. When environment behavior matters, cite `.env.example`, configuration schemas, deployment docs, or source files that read the variable.
 
 ## Tool adapters
 
@@ -162,18 +172,18 @@ npx skills update project-context-bootstrap -g -y
 Verify the installed package contains bundled resources:
 
 ```bash
-test -f ~/.codex/skills/project-context-bootstrap/scripts/validate_docs.py
-test -f ~/.codex/skills/project-context-bootstrap/templates/AI_CONTEXT.md
+test -f ~/.agents/skills/project-context-bootstrap/scripts/validate_docs.py || test -f ~/.codex/skills/project-context-bootstrap/scripts/validate_docs.py
+test -f ~/.agents/skills/project-context-bootstrap/templates/AI_CONTEXT.md || test -f ~/.codex/skills/project-context-bootstrap/templates/AI_CONTEXT.md
 ```
 
 ## Reference practices
 
 | Project | Adopted | Not adopted in MVP |
 | --- | --- | --- |
-| [AGENTS.md](https://github.com/agentsmd/agents.md) | Stable agent instruction entrypoint | Tool-specific behavior |
-| [llms.txt](https://llmstxt.org/) | Concise Markdown context map ideas | `llms.txt` adapter |
-| [Repomix](https://github.com/yamadashy/repomix) | Context budget and evidence mindset | Repository packing |
-| [Gitingest](https://github.com/coderamp-labs/gitingest) | Prompt-friendly context shape | Full source digest |
+| [AGENTS.md](https://github.com/agentsmd/agents.md) | Stable agent instruction entrypoint, cross-agent portability, nested-repository awareness | Tool-specific behavior |
+| [llms.txt](https://llmstxt.org/) | Concise Markdown context map ideas, stable section order, optional-detail mindset | `llms.txt` adapter |
+| [Repomix](https://github.com/yamadashy/repomix) | Context budget, ignore rules, and sensitive-data mindset | Repository packing |
+| [Gitingest](https://github.com/coderamp-labs/gitingest) | Prompt-friendly structure, repository tree/statistics mindset, `.gitignore`-aware inputs | Full source digest |
 
 ## License
 

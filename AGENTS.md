@@ -59,6 +59,8 @@ For Android context examples, read:
 
 Run these before finishing changes:
 
+Quick:
+
 ```bash
 python3 -m unittest tests/test_validate_docs.py
 python3 skills/project-context-bootstrap/scripts/validate_docs.py skills/project-context-bootstrap/examples/fixtures/android-client-context --profile android
